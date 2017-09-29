@@ -11,4 +11,5 @@ public interface PropertyNames {
     /** Whether ids are mapped using external stop place registry during import.
      * Disabling this will cause no ids to be mapped, regardless of input param. */
     public static final String STOP_PLACE_ID_MAPPING = ".stop.place.id.mapping";
+	String FILE_STORE_IMPLEMENTATION = ".file.store.impl";
 }

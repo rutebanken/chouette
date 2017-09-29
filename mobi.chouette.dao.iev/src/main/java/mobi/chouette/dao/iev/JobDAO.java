@@ -19,6 +19,8 @@ import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Job_;
 import mobi.chouette.model.iev.Link;
 
+import org.joda.time.LocalDateTime;
+
 @Stateless
 @Log4j
 public class JobDAO extends GenericDAOImpl<Job> {
@@ -110,6 +112,21 @@ public class JobDAO extends GenericDAOImpl<Job> {
 		Predicate statusPredicate = builder.equal(root.get(Job_.status),
 				status); // Created jobs are only in initialization phase, should not be sent
 		criteria.where( statusPredicate);
+		criteria.orderBy(builder.asc(root.get(Job_.created)));
+		TypedQuery<Job> query = em.createQuery(criteria);
+		result = query.getResultList();
+		return result;
+	}
+
+	public List<Job> findByStatusesAndUpdatedSince(List<Job.STATUS> statuses, LocalDateTime since) {
+		List<Job> result;
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Job> criteria = builder.createQuery(type);
+		Root<Job> root = criteria.from(type);
+		Predicate statusPredicate = root.get(Job_.status).in(statuses);
+		// Created jobs are only in initialization phase, should not be sent
+		Predicate updatedSincePredicate = builder.greaterThan(root.get(Job_.updated), since);
+		criteria.where(builder.and(statusPredicate, updatedSincePredicate));
 		criteria.orderBy(builder.asc(root.get(Job_.created)));
 		TypedQuery<Job> query = em.createQuery(criteria);
 		result = query.getResultList();
