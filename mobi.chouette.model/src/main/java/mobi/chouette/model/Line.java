@@ -347,6 +347,17 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	private Network network;
 
 	/**
+	 * Presentation reference
+	 *
+	 * @return The actual value
+	 */
+	@Getter
+	@ManyToOne(cascade = { CascadeType.PERSIST })
+	@JoinColumn(name = "presentation_id")
+	private Presentation presentation;
+
+
+	/**
 	 * set network
 	 * 
 	 * @param network New value

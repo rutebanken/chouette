@@ -517,6 +517,58 @@ CREATE TABLE footnotes_vehicle_journey_at_stops (
 
 ALTER TABLE chouette_gui.footnotes_vehicle_journey_at_stops OWNER TO chouette;
 
+-- Presentation
+
+CREATE TABLE presentations (
+    id bigint NOT NULL,
+    creation_time timestamp without time zone,
+    objectid character varying COLLATE pg_catalog."default" NOT NULL,
+    object_version integer,
+    creator_id character varying COLLATE pg_catalog."default",
+    colour character varying,
+    text_colour character varying,
+    text_font character varying,
+    );
+
+
+    create_table :presentations do |t|
+
+      t.string   "colour"
+      t.string   "textColour"
+      t.string   "textFont"
+
+    end
+
+ALTER TABLE chouette_gui.presentations OWNER TO chouette;
+
+CREATE UNIQUE INDEX presentations_objectid_idx
+    ON chouette_gui.presentations USING btree
+    (objectid COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+--
+-- TOC entry 192 (class 1259 OID 938926)
+-- Name: footnotes_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
+--
+
+CREATE SEQUENCE presentations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE chouette_gui.presentations_id_seq OWNER TO chouette;
+
+--
+-- TOC entry 4260 (class 0 OID 0)
+-- Dependencies: 192
+-- Name: footnotes_id_seq; Type: SEQUENCE OWNED BY; Schema: chouette_gui; Owner: chouette
+--
+
+ALTER SEQUENCE presentations_id_seq OWNED BY footnotes.id;
+
 
 
 --
@@ -841,7 +893,8 @@ CREATE TABLE lines (
     url character varying(255),
     color character varying(6),
     text_color character varying(6),
-    stable_id character varying(255)
+    stable_id character varying(255),
+    presentation_id
 );
 
 
