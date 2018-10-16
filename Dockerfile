@@ -57,10 +57,10 @@ RUN tar xzf jdk.tgz
 ENV JAVA_HOME /opt/jboss/jdk1.8.0_144/
 
 # Deploying by copying to deployment directory
-COPY chouette.ear /opt/jboss/wildfly/standalone/deployments/
+COPY chouette_iev/target/chouette.ear /opt/jboss/wildfly/standalone/deployments/
 
 # Copy standalone customizations
-COPY files/wildfly/standalone.conf /opt/jboss/wildfly/bin
+COPY docker/files/wildfly/standalone.conf /opt/jboss/wildfly/bin
 # From http://stackoverflow.com/questions/20965737/docker-jboss7-war-commit-server-boot-failed-in-an-unrecoverable-manner
 RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \
   && mkdir -p /opt/jboss/data \
@@ -72,16 +72,16 @@ RUN mkdir -p /opt/jboss/wildfly/agent-bond \
  && curl http://central.maven.org/maven2/io/fabric8/agent-bond-agent/1.0.2/agent-bond-agent-1.0.2.jar \
           -o /opt/jboss/wildfly/agent-bond/agent-bond.jar \
  && chmod 444 /opt/jboss/wildfly/agent-bond/agent-bond.jar
-ADD files/jmx_exporter_config.yml /opt/jboss/wildfly/agent-bond/
+ADD docker/files/jmx_exporter_config.yml /opt/jboss/wildfly/agent-bond/
 EXPOSE 8778 9779
 
 # Running as root, in order to get mounted volume writable:
 USER root
 
-COPY files/disk_usage_notifier.sh /disk_usage_notifier.sh
+COPY docker/files/disk_usage_notifier.sh /disk_usage_notifier.sh
 RUN chmod a+x /disk_usage_notifier.sh
 
-COPY files/disk_usage_notifier.sh /disk_usage_notifier.sh
+COPY docker/files/disk_usage_notifier.sh /disk_usage_notifier.sh
 
 
 
