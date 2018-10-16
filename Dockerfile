@@ -16,7 +16,7 @@ RUN wget --http-user=${NEXUS_USER} --http-password=${NEXUS_PASS} https://nexus.r
 RUN wget --http-user=${NEXUS_USER} --http-password=${NEXUS_PASS} https://nexus.rutebanken.org/content/groups/public/com/sun/xml/bind/jaxb-xjc/2.2.11/jaxb-xjc-2.2.11.jar            --directory-prefix /opt/jboss/wildfly/modules/system/layers/base/com/sun/xml/bind/main/
 RUN wget --http-user=${NEXUS_USER} --http-password=${NEXUS_PASS} https://nexus.rutebanken.org/content/groups/public/xerces/xercesImpl/2.11.0.SP6-RB/xercesImpl-2.11.0.SP6-RB.jar    --directory-prefix /opt/jboss/wildfly/modules/system/layers/base/org/apache/xerces/main/
 RUN wget --http-user=${NEXUS_USER} --http-password=${NEXUS_PASS} https://nexus.rutebanken.org/content/groups/public/net/postgis/postgis-jdbc/2.1.7.2/postgis-jdbc-2.1.7.2.jar       --directory-prefix /opt/jboss/wildfly/customization/
-RUN wget http://jump.rutebanken.org/postgresql-9.3-1103.jdbc41.jar                                                          --directory-prefix /opt/jboss/wildfly/customization/
+RUN wget http://jump.rutebanken.org/postgresql-9.3-1103.jdbc41.jar --directory-prefix /opt/jboss/wildfly/customization/
 
 
 # COPY postgresql-9.3-1103.jdbc41.jar /opt/jboss/wildfly/customization/postgresql-9.3-1103.jdbc41.jar
