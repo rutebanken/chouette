@@ -42,16 +42,12 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.file.FileStoreFactory;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.CleanStopAreaRepositoryCommand;
+import mobi.chouette.model.dto.ReferentialInfo;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Job.STATUS;
 import mobi.chouette.model.iev.Link;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import mobi.chouette.service.JobService;
-import mobi.chouette.service.JobServiceManager;
-import mobi.chouette.service.RequestExceptionCode;
-import mobi.chouette.service.RequestServiceException;
-import mobi.chouette.service.ServiceException;
-import mobi.chouette.service.ServiceExceptionCode;
+import mobi.chouette.service.*;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -70,6 +66,9 @@ public class RestService implements Constant {
 
 	@Inject
 	JobServiceManager jobServiceManager;
+
+	@Inject
+	ReferentialService referentialService;
 
 	@Context
 	UriInfo uriInfo;
@@ -519,9 +518,42 @@ public class RestService implements Constant {
 		}
 	}
 
+	//create referential
+	@POST
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Path("/create")
+	public Response create(ReferentialInfo referentialInfo) {
+		log.info("Creating referential " + referentialInfo.getDataspaceName());
+		try {
+			referentialService.createReferential(referentialInfo);
+			return Response.ok().build();
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	//update referential
+	@POST
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Path("/update")
+	public Response update(ReferentialInfo referentialInfo) {
+		log.info("Updating referential " + referentialInfo.getDataspaceName());
+		try {
+			referentialService.updateReferential(referentialInfo);
+			return Response.ok().build();
+		} catch (ServiceException ex) {
+			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
+			throw toWebApplicationException(ex);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	// delete referential
 	@DELETE
-	@Path("/{ref}/jobs")
+	@Path("/{ref}/drop")
 	public Response drop(@PathParam("ref") String referential, String dummy) {
 		try {
 			log.info(Color.CYAN + "Call drop referential = " + referential + ", dummy = " + dummy + Color.NORMAL);
