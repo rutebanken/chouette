@@ -11,10 +11,15 @@ import javax.persistence.*;
 public class ReferentialDAOImpl implements ReferentialDAO {
 
     private static final String SQL_SELECT_SLUG = "SELECT SLUG FROM PUBLIC.REFERENTIALS";
-    private static final String SQL_UPDATE_REFERENTIAL="UPDATE public.referentials\n" +
-            "SET updated_at=current_timestamp,projection_type=:dataspace_projection,data_format = :dataspace_format\n" +
-            "WHERE public.referentials.name=:dataspace_name AND public.referentials.organisation_id = (SELECT organisations.id FROM organisations WHERE organisations.name=:organisation_name)";
 
+    private static final String SQL_UPDATE_REFERENTIAL = "UPDATE public.referentials " +
+            "SET updated_at=current_timestamp, name=:dataspace_name, projection_type=:dataspace_projection, data_format=:dataspace_format WHERE slug=:dest_schema";
+
+    private static final String SQL_DROP_SCHEMA = "DROP SCHEMA %s CASCADE";
+
+    private static final String SQL_DELETE_REFERENTIAL = "DELETE FROM public.referentials WHERE slug=:dest_schema";
+
+    private static final String SQL_DELETE_USERS= "DELETE FROM public.users WHERE email=:email";
 
     @PersistenceContext(unitName = "public")
     private EntityManager em;
@@ -108,7 +113,7 @@ public class ReferentialDAOImpl implements ReferentialDAO {
         updateReferentialQuery.setParameter("dataspace_projection", referentialInfo.getDataspaceProjection());
         updateReferentialQuery.setParameter("dataspace_format", referentialInfo.getDataspaceFormat());
         updateReferentialQuery.setParameter("dataspace_name", referentialInfo.getDataspaceName());
-        updateReferentialQuery.setParameter("organisation_name", referentialInfo.getOrganisationName());
+        updateReferentialQuery.setParameter("dest_schema", referentialInfo.getSchemaName());
 
         int nbModifiedRow = updateReferentialQuery.executeUpdate();
         return nbModifiedRow != 0;
@@ -120,9 +125,28 @@ public class ReferentialDAOImpl implements ReferentialDAO {
         updateReferentialQuery.setParameter("dataspace_projection", referentialInfo.getDataspaceProjection());
         updateReferentialQuery.setParameter("dataspace_format", referentialInfo.getDataspaceFormat());
         updateReferentialQuery.setParameter("dataspace_name", referentialInfo.getDataspaceName());
-        updateReferentialQuery.setParameter("organisation_name", referentialInfo.getMasterOrganisationName());
+        updateReferentialQuery.setParameter("dest_schema", referentialInfo.getSchemaName());
 
         int nbModifiedRow = updateReferentialQuery.executeUpdate();
+        return nbModifiedRow != 0;
+    }
+
+    @Override
+    public boolean deleteReferential(ReferentialInfo referentialInfo) {
+
+        Query dropSchemaQuery = em.createNativeQuery(String.format(SQL_DROP_SCHEMA,referentialInfo.getSchemaName()));
+        dropSchemaQuery.executeUpdate();
+
+        Query deleteUserQuery = em.createNativeQuery(SQL_DELETE_USERS);
+        deleteUserQuery.setParameter("email", referentialInfo.getUserEmail());
+        deleteUserQuery.executeUpdate();
+        deleteUserQuery.setParameter("email", referentialInfo.getAdminUserEmail());
+        deleteUserQuery.executeUpdate();
+
+        Query deleteReferentialQuery = em.createNativeQuery(SQL_DELETE_REFERENTIAL);
+        deleteReferentialQuery.setParameter("dest_schema", referentialInfo.getSchemaName());
+
+        int nbModifiedRow = deleteReferentialQuery.executeUpdate();
         return nbModifiedRow != 0;
     }
 

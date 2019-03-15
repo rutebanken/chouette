@@ -551,9 +551,27 @@ public class RestService implements Constant {
 		}
 	}
 
+	//update referential
+	@DELETE
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Path("/delete")
+	public Response delete(ReferentialInfo referentialInfo) {
+		log.info("Deleting referential " + referentialInfo.getDataspaceName());
+		try {
+			referentialService.deleteReferential(referentialInfo);
+			return Response.ok().build();
+		} catch (ServiceException ex) {
+			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
+			throw toWebApplicationException(ex);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	// delete referential
 	@DELETE
-	@Path("/{ref}/drop")
+	@Path("/{ref}/job")
 	public Response drop(@PathParam("ref") String referential, String dummy) {
 		try {
 			log.info(Color.CYAN + "Call drop referential = " + referential + ", dummy = " + dummy + Color.NORMAL);

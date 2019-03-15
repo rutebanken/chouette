@@ -9,6 +9,7 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -18,10 +19,9 @@ import javax.ejb.Singleton;
 @Log4j
 public class ReferentialService {
 
-    public static final String MIGRATED_SCHEMA_PREFIX = "rb_";
-
-
+    private  static final String MIGRATED_SCHEMA_PREFIX = "rb_";
     public static final String BEAN_NAME = "ReferentialService";
+
     @EJB
     ReferentialDAO referentialDAO;
 
@@ -62,7 +62,7 @@ public class ReferentialService {
 
     }
 
-    public void createReferential(ReferentialInfo referentialInfo) {
+    public void createReferential(ReferentialInfo referentialInfo) throws ServiceException {
 
         log.info("Creating referential for: " + referentialInfo);
 
@@ -75,7 +75,7 @@ public class ReferentialService {
             referentialInfo.setAdminUserEmail(String.format(defaultReferentialAdminEmailFormat, schemaName));
         }
         if (referentialInfo.getUserEmail() == null) {
-            referentialInfo.setUserEmail(String.format(defaultReferentialUserEmailFormat, referentialInfo.getUserName()));
+            referentialInfo.setUserEmail(String.format(defaultReferentialUserEmailFormat, schemaName));
         }
         if (referentialInfo.getDataspaceBounds() == null) {
             referentialInfo.setDataspaceBounds(defaultDataspaceBounds);
@@ -109,8 +109,12 @@ public class ReferentialService {
 
         log.info("Updating referential for: " + referentialInfo);
 
-        boolean updated;
         String schemaName = referentialInfo.getSchemaName();
+        if(!referentialDAO.getReferentials().contains(schemaName)) {
+            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot delete referential: referential not found: " + referentialInfo);
+        }
+
+        boolean updated;
         if (schemaName.startsWith(MIGRATED_SCHEMA_PREFIX)) {
             if (referentialInfo.getMasterOrganisationName() == null) {
                 referentialInfo.setMasterOrganisationName(defaultMasterOrganisationName);
@@ -120,8 +124,30 @@ public class ReferentialService {
         } else {
             updated = referentialDAO.updateReferential(referentialInfo);
         }
-        if(!updated) {
-            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot update referential: referential not found: " + referentialInfo);
+        if (!updated) {
+            throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, "Cannot update referential: internal error: " + referentialInfo);
         }
     }
+
+
+    public void deleteReferential(ReferentialInfo referentialInfo) throws ServiceException {
+
+        log.info("Deleting referential for: " + referentialInfo);
+
+        String schemaName = referentialInfo.getSchemaName();
+        if(!referentialDAO.getReferentials().contains(schemaName)) {
+            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot delete referential: referential not found: " + referentialInfo);
+        }
+
+        if (referentialInfo.getUserEmail() == null) {
+            referentialInfo.setUserEmail(String.format(defaultReferentialUserEmailFormat, schemaName));
+        }
+        if (referentialInfo.getAdminUserEmail() == null) {
+            referentialInfo.setAdminUserEmail(String.format(defaultReferentialAdminEmailFormat, schemaName));
+        }
+
+        referentialDAO.deleteReferential(referentialInfo);
+    }
+
+
 }

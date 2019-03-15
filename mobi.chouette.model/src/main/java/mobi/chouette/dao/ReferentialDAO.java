@@ -15,4 +15,6 @@ public interface ReferentialDAO {
     boolean updateReferential(ReferentialInfo referentialInfo);
 
     boolean updateMigratedReferential(ReferentialInfo referentialInfo);
+
+    boolean deleteReferential(ReferentialInfo referentialInfo);
 }

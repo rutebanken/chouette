@@ -102,3 +102,16 @@ BEGIN
  END;
 
 $$ LANGUAGE plpgsql VOLATILE;
+
+
+--CREATE UNIQUE INDEX  referentials_slug ON referentials (slug);
+--ALTER TABLE referentials ALTER COLUMN slug SET NOT NULL;
+
+--CREATE UNIQUE INDEX  referentials_name ON referentials (name);
+--ALTER TABLE referentials ALTER COLUMN name SET NOT NULL;
+
+
+
+
+
+
