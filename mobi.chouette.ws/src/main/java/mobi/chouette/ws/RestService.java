@@ -526,7 +526,7 @@ public class RestService implements Constant {
 		log.info("Creating referential " + referentialInfo.getDataspaceName());
 		try {
 			referentialService.createReferential(referentialInfo);
-			return Response.ok().build();
+			return Response.ok().header(api_version_key, api_version).build();
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
@@ -541,7 +541,7 @@ public class RestService implements Constant {
 		log.info("Updating referential " + referentialInfo.getDataspaceName());
 		try {
 			referentialService.updateReferential(referentialInfo);
-			return Response.ok().build();
+			return Response.ok().header(api_version_key, api_version).build();
 		} catch (ServiceException ex) {
 			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
 			throw toWebApplicationException(ex);
@@ -551,7 +551,7 @@ public class RestService implements Constant {
 		}
 	}
 
-	//update referential
+	//delete referential database schema and drop associated jobs
 	@DELETE
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/delete")
@@ -559,7 +559,8 @@ public class RestService implements Constant {
 		log.info("Deleting referential " + referentialInfo.getDataspaceName());
 		try {
 			referentialService.deleteReferential(referentialInfo);
-			return Response.ok().build();
+			jobServiceManager.drop(referentialInfo.getSchemaName());
+			return Response.ok().header(api_version_key, api_version).build();
 		} catch (ServiceException ex) {
 			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
 			throw toWebApplicationException(ex);

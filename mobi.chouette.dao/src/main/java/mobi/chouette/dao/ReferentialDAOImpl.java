@@ -2,10 +2,9 @@ package mobi.chouette.dao;
 
 import mobi.chouette.model.dto.ReferentialInfo;
 
-import java.util.List;
-
 import javax.ejb.Stateless;
 import javax.persistence.*;
+import java.util.List;
 
 @Stateless
 public class ReferentialDAOImpl implements ReferentialDAO {
@@ -19,7 +18,7 @@ public class ReferentialDAOImpl implements ReferentialDAO {
 
     private static final String SQL_DELETE_REFERENTIAL = "DELETE FROM public.referentials WHERE slug=:dest_schema";
 
-    private static final String SQL_DELETE_USERS= "DELETE FROM public.users WHERE email=:email";
+    private static final String SQL_DELETE_USERS = "DELETE FROM public.users WHERE email=:email";
 
     @PersistenceContext(unitName = "public")
     private EntityManager em;
@@ -134,7 +133,7 @@ public class ReferentialDAOImpl implements ReferentialDAO {
     @Override
     public boolean deleteReferential(ReferentialInfo referentialInfo) {
 
-        Query dropSchemaQuery = em.createNativeQuery(String.format(SQL_DROP_SCHEMA,referentialInfo.getSchemaName()));
+        Query dropSchemaQuery = em.createNativeQuery(String.format(SQL_DROP_SCHEMA, referentialInfo.getSchemaName()));
         dropSchemaQuery.executeUpdate();
 
         Query deleteUserQuery = em.createNativeQuery(SQL_DELETE_USERS);

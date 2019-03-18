@@ -9,7 +9,6 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
 @Log4j
 public class ReferentialService {
 
-    private  static final String MIGRATED_SCHEMA_PREFIX = "rb_";
+    private static final String MIGRATED_SCHEMA_PREFIX = "rb_";
     public static final String BEAN_NAME = "ReferentialService";
 
     @EJB
@@ -110,8 +109,8 @@ public class ReferentialService {
         log.info("Updating referential for: " + referentialInfo);
 
         String schemaName = referentialInfo.getSchemaName();
-        if(!referentialDAO.getReferentials().contains(schemaName)) {
-            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot delete referential: referential not found: " + referentialInfo);
+        if (!referentialDAO.getReferentials().contains(schemaName)) {
+            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot update referential: referential not found: " + referentialInfo);
         }
 
         boolean updated;
@@ -135,7 +134,7 @@ public class ReferentialService {
         log.info("Deleting referential for: " + referentialInfo);
 
         String schemaName = referentialInfo.getSchemaName();
-        if(!referentialDAO.getReferentials().contains(schemaName)) {
+        if (!referentialDAO.getReferentials().contains(schemaName)) {
             throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot delete referential: referential not found: " + referentialInfo);
         }
 
@@ -148,6 +147,4 @@ public class ReferentialService {
 
         referentialDAO.deleteReferential(referentialInfo);
     }
-
-
 }
