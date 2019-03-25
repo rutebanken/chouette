@@ -572,7 +572,7 @@ public class RestService implements Constant {
 
 	// delete referential
 	@DELETE
-	@Path("/{ref}/job")
+	@Path("/{ref}/jobs")
 	public Response drop(@PathParam("ref") String referential, String dummy) {
 		try {
 			log.info(Color.CYAN + "Call drop referential = " + referential + ", dummy = " + dummy + Color.NORMAL);
