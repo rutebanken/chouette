@@ -4,8 +4,6 @@ USER root
 RUN yum -y update && yum -y install wget && yum clean all
 USER jboss
 
-RUN mkdir /opt/jboss/wildfly/customization/
-
 #Copy iev.properties
 COPY docker/files/wildfly/iev.properties /etc/chouette/iev/
 
@@ -24,7 +22,7 @@ RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \
 
 # Configuration of Prometheus agent
 RUN  mkdir -p /opt/jboss/wildfly/prometheus && chown jboss:jboss /opt/jboss/wildfly/prometheus
-COPY docker/lib/jmx_prometheus_javaagent-0.12.0.jar /opt/jboss/wildfly/prometheus/jmx_prometheus_javaagent.jar
+COPY target/docker/wildfly/prometheus /opt/jboss/wildfly/prometheus/
 COPY docker/files/jmx_exporter_config.yml /opt/jboss/wildfly/prometheus
 
 EXPOSE 8778 9779
@@ -36,11 +34,6 @@ COPY docker/files/disk_usage_notifier.sh /disk_usage_notifier.sh
 RUN chmod a+x /disk_usage_notifier.sh
 
 COPY docker/files/disk_usage_notifier.sh /disk_usage_notifier.sh
-
-
-
-
-
 
 # This argument comes from https://github.com/jboss-dockerfiles/wildfly
 # It enables the admin interface.

@@ -28,6 +28,8 @@
 		<jaxb-version>2.2.11</jaxb-version>
 		<lombok-version>1.16.8</lombok-version>
 		<lombok-maven-plugin-version>1.16.8.0</lombok-maven-plugin-version>
+		<prometheus.agent.version>0.12.0</prometheus.agent.version>
+
 		<project.rootDir>${project.basedir}</project.rootDir>
 
     <!-- NB: Concious choice of using snapshot version. This is to keep in
@@ -111,7 +113,7 @@
 				<!-- common configuration shared by all executions -->
 				<configuration>
 					<driver>org.postgresql.Driver</driver>
-					<url>jdbc:postgresql://localhost:5435/chouette_test</url>
+					<url>jdbc:postgresql://localhost:5432/chouette_test</url>
 					<username>chouette</username>
 					<password>chouette</password>
 					<delimiterType>row</delimiterType>
@@ -228,6 +230,29 @@
 							</artifactItems>
 						</configuration>
 					</execution>
+
+					<execution>
+						<id>copy-prometheus-agent</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<verbose>true</verbose>
+							<artifactItems>
+								<artifactItem>
+									<groupId>io.prometheus.jmx</groupId>
+									<artifactId>jmx_prometheus_javaagent</artifactId>
+									<version>${prometheus.agent.version}</version>
+									<outputDirectory>
+										${project.rootDir}/target/docker/wildfly/prometheus
+									</outputDirectory>
+									<destFileName>jmx_prometheus_javaagent.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+
 				</executions>
 			</plugin>
 			<plugin>
