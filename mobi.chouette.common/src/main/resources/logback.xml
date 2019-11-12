@@ -23,11 +23,10 @@
                         <pattern>
                             {
                             "serviceContext": {
-                                "service": "marduk"
+                                "service": "chouette"
                             },
                             "message": "%message\n%ex{full}",
                             "severity": "%level",
-                            "breadcrumb": "%X{camel.breadcrumbId}",
                             "reportLocation": {
                                 "filePath": "%logger",
                                 "lineNumber": "%line",
@@ -42,9 +41,6 @@
         <logger name="com" level="INFO"/>
         <logger name="no" level="INFO"/>
         <logger name="org" level="INFO"/>
-
-        <!-- Disabling logging of graph builder annotations since they are also written in the graph building report -->
-        <logger name="GRAPH_BUILDER_ANNOTATION_LOG" level="WARN" />
 
         <root level="INFO">
             <appender-ref ref="console"/>
