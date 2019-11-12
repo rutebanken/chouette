@@ -4,28 +4,28 @@ USER root
 RUN yum -y update && yum -y install wget && yum clean all
 USER jboss
 
-#Copy iev.properties
+
+# Copy iev.properties
 COPY docker/files/wildfly/iev.properties /etc/chouette/iev/
 
 RUN touch /opt/jboss/wildfly/build.log
 RUN chmod a+w /opt/jboss/wildfly/build.log
 
-# Deploying by copying to deployment directory
+# Copy EAR
 COPY chouette_iev/target/chouette.ear /opt/jboss/wildfly/standalone/deployments/
-
-# Copy standalone customizations
+# Copy customized Wildfly modules and Prometheus agent
+COPY target/docker/wildfly /opt/jboss/wildfly/
+# Copy customized Wildfly configuration file
 COPY docker/files/wildfly/standalone.conf /opt/jboss/wildfly/bin
+# Copy Prometheus agent configuration file
+COPY docker/files/jmx_exporter_config.yml /opt/jboss/wildfly/prometheus
+
 # From http://stackoverflow.com/questions/20965737/docker-jboss7-war-commit-server-boot-failed-in-an-unrecoverable-manner
 RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \
   && mkdir -p /opt/jboss/data \
   && chown jboss:jboss /opt/jboss/data
 
-# Configuration of Prometheus agent
-RUN  mkdir -p /opt/jboss/wildfly/prometheus && chown jboss:jboss /opt/jboss/wildfly/prometheus
-COPY target/docker/wildfly/prometheus /opt/jboss/wildfly/prometheus/
-COPY docker/files/jmx_exporter_config.yml /opt/jboss/wildfly/prometheus
 
-EXPOSE 8778 9779
 
 # Running as root, in order to get mounted volume writable:
 USER root
