@@ -217,9 +217,9 @@ workflows:
              - build-release
            post-steps:
              - save-image-name
-           #filters:
-           #  branches:
-           #    only: rutebanken_develop
+           filters:
+             branches:
+               only: rutebanken_develop
       - deploy-helm:
           name: deploy-dev-release
           context: dev
