@@ -467,7 +467,29 @@ ALTER SEQUENCE footnotes_id_seq OWNED BY footnotes.id;
 
 
 
+create table if not exists chouette_gui.footnote_alternative_texts
+(
+    id bigserial not null
+        constraint footnote_alternative_texts_pkey
+            primary key,
+    objectid varchar not null,
+    object_version integer,
+    creation_time timestamp,
+    creator_id varchar(255),
+    footnote_id integer not null,
+    text varchar not null,
+    language varchar not null
+);
 
+alter table chouette_gui.footnote_alternative_texts owner to chouette;
+
+create unique index if not exists footnote_alternative_texts_objectid_key
+    on chouette_gui.footnote_alternative_texts (objectid);
+
+create unique index if not exists footnote_alternative_texts_footnote_id_language
+    on chouette_gui.footnote_alternative_texts (footnote_id, language);
+
+alter sequence chouette_gui.footnote_alternative_texts_id_seq owner to chouette;
 
 
 --

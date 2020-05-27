@@ -39,6 +39,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 
 	public static final String _1_NETEX_REFERENCE_TO_ILLEGAL_ELEMENT = "1-NETEXPROFILE-ReferenceToIllegalElement";
 	public static final String _1_NETEX_NOTICE_TEXT = "1-NETEXPROFILE-Notice-Text";
+	public static final String _1_NETEX_NOTICE_ALTERNATIVE_TEXT_TEXT = "1-NETEXPROFILE-Notice-AlternativeText-Text";
+	public static final String _1_NETEX_NOTICE_ALTERNATIVE_TEXT_LANG = "1-NETEXPROFILE-Notice-AlternativeText-Lang";
 
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_CUSTOMER_SERVICE_CONTACT_DETAILS = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-CustomerServiceContactDetails";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_CUSTOMER_SERVICE_CONTACT_DETAILS_URL = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-CustomerServiceContactDetails-Url";
@@ -299,6 +301,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEX_COMMON_SERVICE_FRAME_SERVICE_JOURNEY_PATTERN, "E");
 
 		addCheckpoints(context, _1_NETEX_NOTICE_TEXT, "E");
+		addCheckpoints(context, _1_NETEX_NOTICE_ALTERNATIVE_TEXT_TEXT, "E");
+		addCheckpoints(context, _1_NETEX_NOTICE_ALTERNATIVE_TEXT_LANG, "E");
 	}
 
 	private void addCheckpoints(Context context, String checkpointName, String error) {
@@ -475,6 +479,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 
 	protected void validateNotices(Context context, XPathCompiler xpath, XdmNode subLevel) throws XPathExpressionException, SaxonApiException {
 		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice[not(Text)]", _1_NETEX_NOTICE_TEXT);
+		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice/alternativeTexts/AlternativeText[not(Text)]",
+				_1_NETEX_NOTICE_ALTERNATIVE_TEXT_TEXT);
+		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice/alternativeTexts/AlternativeText/Text[not(@lang)]",
+				_1_NETEX_NOTICE_ALTERNATIVE_TEXT_LANG);
 	}
 
 	protected void validateCommonFrameConcepts(Context context, XPathCompiler xpath, XdmNode dom) throws XPathExpressionException, SaxonApiException {
