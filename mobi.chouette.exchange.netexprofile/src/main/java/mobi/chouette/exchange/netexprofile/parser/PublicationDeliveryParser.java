@@ -424,8 +424,10 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			for (AlternativeText alternativeText : notice.getAlternativeTexts().getAlternativeText()) {
 				FootNoteAlternativeText footNoteAlternativeText = ObjectFactory.getFootnoteAlternativeText(referential, alternativeText.getId());
 				footNoteAlternativeText.setFootnote(footnote);
-				footNoteAlternativeText.setText(alternativeText.getText().getValue());
-				footNoteAlternativeText.setLanguage(alternativeText.getText().getLang());
+				if(alternativeText.getText() != null) {
+					footNoteAlternativeText.setText(alternativeText.getText().getValue());
+					footNoteAlternativeText.setLanguage(alternativeText.getText().getLang());
+				}
 				footnote.getAlternativeTexts().add(footNoteAlternativeText);
 			}
 		}
