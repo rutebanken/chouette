@@ -43,9 +43,9 @@ public class NoticeProducer extends NetexProducer {
 			VersionOfObjectRefStructure noticedObjectRef = netexFactory.createVersionOfObjectRefStructure();
 			NetexProducerUtils.populateReference(noticedObject, noticedObjectRef, true);
 
-			if(!footnote.getAlternativeTexts().isEmpty()) {
+			if (!footnote.getAlternativeTexts().isEmpty()) {
 				AlternativeTexts_RelStructure alternativeTextsRelStructure = netexFactory.createAlternativeTexts_RelStructure();
-				for(FootNoteAlternativeText footNoteAlternativeText : footnote.getAlternativeTexts()) {
+				for (FootNoteAlternativeText footNoteAlternativeText : footnote.getAlternativeTexts()) {
 					AlternativeText alternativeText = netexFactory.createAlternativeText();
 					NetexProducerUtils.populateId(footNoteAlternativeText, alternativeText);
 					MultilingualString multilingualString = netexFactory.createMultilingualString();
