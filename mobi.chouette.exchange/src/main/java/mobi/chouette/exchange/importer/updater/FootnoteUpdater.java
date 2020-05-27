@@ -5,7 +5,6 @@ import javax.ejb.Stateless;
 import mobi.chouette.common.Context;
 import mobi.chouette.model.FootNoteAlternativeText;
 import mobi.chouette.model.Footnote;
-import org.rutebanken.netex.model.AlternativeText;
 
 @Stateless(name = FootnoteUpdater.BEAN_NAME)
 public class FootnoteUpdater implements Updater<Footnote> {
