@@ -477,17 +477,14 @@ create table if not exists chouette_gui.footnote_alternative_texts
     creation_time timestamp,
     creator_id varchar(255),
     footnote_id integer not null,
-    text varchar not null,
-    language varchar not null
+    text varchar,
+    language varchar
 );
 
 alter table chouette_gui.footnote_alternative_texts owner to chouette;
 
 create unique index if not exists footnote_alternative_texts_objectid_key
     on chouette_gui.footnote_alternative_texts (objectid);
-
-create unique index if not exists footnote_alternative_texts_footnote_id_language
-    on chouette_gui.footnote_alternative_texts (footnote_id, language);
 
 alter sequence chouette_gui.footnote_alternative_texts_id_seq owner to chouette;
 
