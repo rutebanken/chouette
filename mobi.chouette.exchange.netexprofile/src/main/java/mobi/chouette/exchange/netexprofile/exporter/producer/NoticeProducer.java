@@ -47,7 +47,7 @@ public class NoticeProducer extends NetexProducer {
 				AlternativeTexts_RelStructure alternativeTextsRelStructure = netexFactory.createAlternativeTexts_RelStructure();
 				for(FootNoteAlternativeText footNoteAlternativeText : footnote.getAlternativeTexts()) {
 					AlternativeText alternativeText = netexFactory.createAlternativeText();
-					NetexProducerUtils.populateId(footnote, notice);
+					NetexProducerUtils.populateId(footNoteAlternativeText, alternativeText);
 					MultilingualString multilingualString = netexFactory.createMultilingualString();
 					multilingualString.setLang(footNoteAlternativeText.getLanguage());
 					multilingualString.setValue(footNoteAlternativeText.getText());
