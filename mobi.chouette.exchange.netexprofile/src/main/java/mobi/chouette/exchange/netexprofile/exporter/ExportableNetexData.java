@@ -25,6 +25,7 @@ import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.Network;
 import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.NoticeAssignment;
+import org.rutebanken.netex.model.OperatingDay;
 import org.rutebanken.netex.model.OperatingPeriod;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.rutebanken.netex.model.PassengerStopAssignment;
@@ -129,6 +130,10 @@ public class ExportableNetexData {
     @Getter
     @Setter
     private Map<String,OperatingPeriod> sharedOperatingPeriods = new HashMap<>();
+
+    @Getter
+    @Setter
+    private Map<String, OperatingDay> sharedOperatingDays = new HashMap<>();
 
     @Getter
     @Setter
