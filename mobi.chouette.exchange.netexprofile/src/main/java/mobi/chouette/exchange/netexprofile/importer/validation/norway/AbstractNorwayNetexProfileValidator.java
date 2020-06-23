@@ -408,12 +408,13 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		noticedObjectRefSubstitutions.add("TimetabledPassingTime");
 		allowedSubstitutions.put("NoticedObjectRef", noticedObjectRefSubstitutions);
 
-		Set<String> toJourneyRefSubstitutions = new HashSet<>();
-		toJourneyRefSubstitutions.add("ServiceJourney");
-		allowedSubstitutions.put("ToJourneyRef", toJourneyRefSubstitutions);
-		allowedSubstitutions.put("FromJourneyRef", toJourneyRefSubstitutions);
+		Set<String> toAndFromJourneyRefSubstitutions = new HashSet<>();
+		toAndFromJourneyRefSubstitutions.add("ServiceJourney");
+		toAndFromJourneyRefSubstitutions.add("DatedServiceJourney");
+		allowedSubstitutions.put("ToJourneyRef", toAndFromJourneyRefSubstitutions);
+		allowedSubstitutions.put("FromJourneyRef", toAndFromJourneyRefSubstitutions);
 
-		Set<String> vehicleScheduleJourneyRefSubstitutions = new HashSet<>(toJourneyRefSubstitutions);
+		Set<String> vehicleScheduleJourneyRefSubstitutions = new HashSet<>(toAndFromJourneyRefSubstitutions);
 		vehicleScheduleJourneyRefSubstitutions.add("VehicleJourney");
 		vehicleScheduleJourneyRefSubstitutions.add("DeadRun");
 		allowedSubstitutions.put("VehicleJourneyRef", vehicleScheduleJourneyRefSubstitutions);
@@ -425,6 +426,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		Set<String> lineRefSubstitutions = new HashSet<>();
 		lineRefSubstitutions.add("FlexibleLine");
 		allowedSubstitutions.put("LineRef", lineRefSubstitutions);
+
+		Set<String> externalVehicleJourneyRefSubstitutions = new HashSet<>();
+		externalVehicleJourneyRefSubstitutions.add("ServiceJourney");
+		allowedSubstitutions.put("ExternalVehicleJourneyRef", externalVehicleJourneyRefSubstitutions);
 
 		boolean foundErrors = false;
 
