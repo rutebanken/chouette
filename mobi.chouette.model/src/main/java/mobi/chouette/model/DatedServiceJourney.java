@@ -9,13 +9,20 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.joda.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -40,7 +47,8 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
      * Vehicle journey.
      */
     @Getter
-    @Column(name = "vehicle_journey_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_journey_id")
     private VehicleJourney vehicleJourney;
 
     public void setVehicleJourney(VehicleJourney vehicleJourney) {
@@ -57,9 +65,30 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
      * Original dated service journey.
      */
     @Getter
-    @Setter
-    @Column(name = "derived_from_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "derived_from_id")
     private DatedServiceJourney derivedFromDatedServiceJourney;
+
+    public void setDerivedFromDatedServiceJourney(DatedServiceJourney derivedFromDatedServiceJourney) {
+        if (this.derivedFromDatedServiceJourney != null) {
+            this.derivedFromDatedServiceJourney.getDerivedDatedServiceJourneys().remove(this);
+        }
+        this.derivedFromDatedServiceJourney = derivedFromDatedServiceJourney;
+        if (derivedFromDatedServiceJourney != null) {
+            derivedFromDatedServiceJourney.getDerivedDatedServiceJourneys().add(this);
+        }
+    }
+
+    /**
+     * Dated service journeys derived from this one.
+     */
+
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "derivedFromDatedServiceJourney")
+    private List<DatedServiceJourney> derivedDatedServiceJourneys = new ArrayList<DatedServiceJourney>(
+            0);
+
 
     /**
      * Operating day

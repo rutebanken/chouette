@@ -2806,3 +2806,29 @@ create table referential_last_update
     last_update_timestamp timestamp
 );
 insert into referential_last_update(last_update_timestamp) values(current_timestamp);
+
+create table if not exists dated_service_journeys
+(
+    id bigserial not null
+        constraint dated_service_journeys_pkey
+            primary key,
+    objectid varchar not null,
+    object_version integer,
+    creation_time timestamp,
+    creator_id varchar(255),
+    operating_day date not null,
+    vehicle_journey_id integer not null
+        constraint service_journeys_fkey
+            references vehicle_journeys,
+    derived_from_id integer
+        constraint derived_from_fkey
+            references dated_service_journeys,
+    service_alteration varchar
+);
+
+alter table dated_service_journeys owner to chouette;
+
+create unique index if not exists dated_service_journeys_objectid_key
+    on dated_service_journeys (objectid);
+
+alter sequence dated_service_journeys_id_seq owner to chouette;
