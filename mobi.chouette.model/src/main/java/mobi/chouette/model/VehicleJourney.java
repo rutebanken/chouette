@@ -319,6 +319,19 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	}
 
 	/**
+	 * datedServiceJourneys
+	 *
+	 * @param da
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "vehicleJourney", cascade = { CascadeType.PERSIST})
+	private List<DatedServiceJourney> datedServiceJourneys = new ArrayList<DatedServiceJourney>(
+			0);
+
+	/**
 	 * company reference<br/>
 	 * if different from line company
 	 * 

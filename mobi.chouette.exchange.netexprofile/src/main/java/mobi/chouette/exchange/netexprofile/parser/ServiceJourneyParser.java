@@ -18,7 +18,6 @@ import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil
 import mobi.chouette.exchange.netexprofile.util.NetexObjectUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.BookingArrangement;
-import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyPattern;
@@ -36,12 +35,10 @@ import org.rutebanken.netex.model.DatedServiceJourney;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
-import org.rutebanken.netex.model.FlexibleServicePropertiesInFrame_RelStructure;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
 import org.rutebanken.netex.model.OperatingDay;
-import org.rutebanken.netex.model.OperatingDayRefStructure;
 import org.rutebanken.netex.model.ServiceJourney;
 import org.rutebanken.netex.model.TimetabledPassingTime;
 
@@ -186,30 +183,33 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		vehicleJourney.setFilled(true);
 	}
 
-	private void parseDatedServiceJourney(Context context, Referential referential, DatedServiceJourney datedServiceJourney) {
-		String datedServiceJourneyId = datedServiceJourney.getId();
+	private void parseDatedServiceJourney(Context context, Referential referential, DatedServiceJourney netexDatedServiceJourney) {
+		String datedServiceJourneyId = netexDatedServiceJourney.getId();
 		log.debug("Parsing DatedServiceJourney with id: " + datedServiceJourneyId);
-		mobi.chouette.model.DatedServiceJourney dsj = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyId);
+		mobi.chouette.model.DatedServiceJourney datedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyId);
 
 		// operating day
 		NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
-		String operatingDayRefId = datedServiceJourney.getOperatingDayRef().getRef();
+		String operatingDayRefId = netexDatedServiceJourney.getOperatingDayRef().getRef();
 		OperatingDay operatingDay = NetexObjectUtil.getOperatingDay(netexReferential, operatingDayRefId);
-		dsj.setOperatingDay(TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate()));
+		datedServiceJourney.setOperatingDay(TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate()));
 
 		// service journey
-		VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, datedServiceJourney.getExternalVehicleJourneyRef().getRef());
-		dsj.setServiceJourney(vehicleJourney);
 
-		// derived from service journey
-		if(datedServiceJourney.getDerivedFromObjectRef() != null) {
-			VehicleJourney derivedFromvehicleJourney = ObjectFactory.getVehicleJourney(referential, datedServiceJourney.getDerivedFromObjectRef());
-			dsj.setDerivedFromServiceJourney(derivedFromvehicleJourney);
+		//VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, netexDatedServiceJourney.getExternalVehicleJourneyRef().getRef());
+		// DSJ: hardcoding references until XSD is available
+		VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, "GOA:ServiceJourney:771-O");
+		datedServiceJourney.setVehicleJourney(vehicleJourney);
+
+		// derived from dated service journey
+		if(netexDatedServiceJourney.getDerivedFromObjectRef() != null) {
+			mobi.chouette.model.DatedServiceJourney derivedFromDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, netexDatedServiceJourney.getDerivedFromObjectRef());
+			datedServiceJourney.setDerivedFromDatedServiceJourney(derivedFromDatedServiceJourney);
 		}
 
 		// service alteration
-		if(datedServiceJourney.getServiceAlteration() != null) {
-			dsj.setServiceAlteration(NetexParserUtils.toServiceAlterationEum(datedServiceJourney.getServiceAlteration()));
+		if(netexDatedServiceJourney.getServiceAlteration() != null) {
+			datedServiceJourney.setServiceAlteration(NetexParserUtils.toServiceAlterationEum(netexDatedServiceJourney.getServiceAlteration()));
 		}
 	}
 

@@ -62,16 +62,17 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 			OperatingDay netexOperatingDay= netexFactory.createOperatingDay();
 			netexOperatingDay.setVersion("0");
 			netexOperatingDay.setId(operatingDayId);
-			//netexOperatingDay.setCalendarDate(TimeUtil.toLocalDateFromJoda(operatingDay));
+			netexOperatingDay.setCalendarDate(TimeUtil.toLocalDateFromJoda(operatingDay).atStartOfDay());
 			exportableNetexData.getSharedOperatingDays().put(netexOperatingDay.getId(), netexOperatingDay);
 		}
 
 		// service journey
-		ServiceJourneyRefStructure serviceJourneyRefStructure =  netexFactory.createServiceJourneyRefStructure();
+		//ServiceJourneyRefStructure serviceJourneyRefStructure =  netexFactory.createServiceJourneyRefStructure();
+		//netexDatedServiceJourney.setServiceJourneyRef(serviceJourneyRefStructure);
 
-		// derived from service journey
-		if(datedServiceJourney.getDerivedFromServiceJourney() != null) {
-			netexDatedServiceJourney.setDerivedFromObjectRef(datedServiceJourney.getDerivedFromServiceJourney().getObjectId());
+		// derived from dated service journey
+		if(datedServiceJourney.getDerivedFromDatedServiceJourney() != null) {
+			netexDatedServiceJourney.setDerivedFromObjectRef(datedServiceJourney.getDerivedFromDatedServiceJourney().getObjectId());
 		}
 
 		// service alteration

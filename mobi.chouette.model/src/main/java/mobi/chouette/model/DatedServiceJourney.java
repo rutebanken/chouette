@@ -13,22 +13,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Entity
 @Table(name = "dated_service_journeys")
 @NoArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"journeyPattern", "derivedFromDatedServiceJourney"})
 public class DatedServiceJourney extends NeptuneIdentifiedObject {
 
-    private static final long serialVersionUID = 304336286208135064L;
+    private static final long serialVersionUID = 8392587538821947318L;
 
     @Getter
     @Setter
@@ -40,41 +36,47 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
     @Column(name = "id", nullable = false)
     protected Long id;
 
-	/**
-	 *  Service journey.
-	 */
-	@Getter
-	@Setter
-	@Column(name = "service_journey")
-	private VehicleJourney serviceJourney;
+    /**
+     * Vehicle journey.
+     */
+    @Getter
+    @Column(name = "vehicle_journey_id")
+    private VehicleJourney vehicleJourney;
 
-	/**
-	 *  Service journey.
-	 */
-	@Getter
-	@Setter
-	@Column(name = "derived_from_service_journey")
-	private VehicleJourney derivedFromServiceJourney;
+    public void setVehicleJourney(VehicleJourney vehicleJourney) {
+        if (this.vehicleJourney != null) {
+            this.vehicleJourney.getDatedServiceJourneys().remove(this);
+        }
+        this.vehicleJourney = vehicleJourney;
+        if (vehicleJourney != null) {
+            vehicleJourney.getDatedServiceJourneys().add(this);
+        }
+    }
 
-	/**
-	 * Operating day
-	 */
-	@Getter
-	@Setter
-	@Column(name = "operating_day")
-	private LocalDate operatingDay;
+    /**
+     * Original dated service journey.
+     */
+    @Getter
+    @Setter
+    @Column(name = "derived_from_id")
+    private DatedServiceJourney derivedFromDatedServiceJourney;
+
+    /**
+     * Operating day
+     */
+    @Getter
+    @Setter
+    @Column(name = "operating_day")
+    private LocalDate operatingDay;
 
     /**
      * Service alteration.
-     *
      */
     @Getter
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "service_alteration")
     private ServiceAlterationEnum serviceAlteration;
-
-
 
 
 }

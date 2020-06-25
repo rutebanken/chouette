@@ -15,6 +15,7 @@ import mobi.chouette.model.RouteSection;
 import org.rutebanken.netex.model.AvailabilityCondition;
 import org.rutebanken.netex.model.Branding;
 import org.rutebanken.netex.model.Codespace;
+import org.rutebanken.netex.model.DatedServiceJourney;
 import org.rutebanken.netex.model.DayType;
 import org.rutebanken.netex.model.DayTypeAssignment;
 import org.rutebanken.netex.model.DestinationDisplay;
@@ -105,6 +106,10 @@ public class ExportableNetexData {
 
     @Getter
     @Setter
+    private List<DatedServiceJourney> datedServiceJourneys = new ArrayList<>();
+
+    @Getter
+    @Setter
     private Map<String,Notice> sharedNotices = new HashMap<>();
 
     @Getter
@@ -145,7 +150,8 @@ public class ExportableNetexData {
         line = null;
         routes.clear();
         journeyPatterns.clear();
-        serviceJourneys. clear();
+        serviceJourneys.clear();
+        datedServiceJourneys.clear();
         noticeAssignmentsServiceFrame.clear();
         noticeAssignmentsTimetableFrame.clear();
         serviceJourneyInterchanges.clear();
@@ -156,6 +162,7 @@ public class ExportableNetexData {
         sharedDayTypes.clear();
         sharedDayTypeAssignments.clear();
         sharedOperatingPeriods.clear();
+        sharedOperatingDays.clear();
         commonCondition = null;
         sharedCodespaces.clear();
         sharedNetworks.clear();

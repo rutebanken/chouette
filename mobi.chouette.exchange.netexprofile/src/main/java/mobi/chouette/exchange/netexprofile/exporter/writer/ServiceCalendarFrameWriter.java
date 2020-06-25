@@ -13,6 +13,7 @@ import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import org.apache.commons.collections.MapUtils;
 import org.rutebanken.netex.model.DayType;
 import org.rutebanken.netex.model.DayTypeAssignment;
+import org.rutebanken.netex.model.OperatingDay;
 import org.rutebanken.netex.model.OperatingPeriod;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
@@ -33,6 +34,10 @@ public class ServiceCalendarFrameWriter extends AbstractNetexWriter {
 
             if (MapUtils.isNotEmpty(exportableNetexData.getSharedOperatingPeriods())) {
                 writeOperatingPeriodsElement(writer, exportableNetexData,marshaller);
+            }
+
+            if (MapUtils.isNotEmpty(exportableNetexData.getSharedOperatingDays())) {
+                writeOperatingDaysElement(writer, exportableNetexData,marshaller);
             }
 
             writeDayTypeAssignmentsElement(writer, exportableNetexData,marshaller);
@@ -73,6 +78,18 @@ public class ServiceCalendarFrameWriter extends AbstractNetexWriter {
             writer.writeStartElement(OPERATING_PERIODS);
             for (OperatingPeriod operatingPeriod : exportableData.getSharedOperatingPeriods().values()) {
                 marshaller.marshal(netexFactory.createOperatingPeriod(operatingPeriod), writer);
+            }
+            writer.writeEndElement();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void writeOperatingDaysElement(XMLStreamWriter writer, ExportableNetexData exportableData, Marshaller marshaller) {
+        try {
+            writer.writeStartElement(OPERATING_DAYS);
+            for (OperatingDay operatingDay : exportableData.getSharedOperatingDays().values()) {
+                marshaller.marshal(netexFactory.createOperatingDay(operatingDay), writer);
             }
             writer.writeEndElement();
         } catch (Exception e) {
