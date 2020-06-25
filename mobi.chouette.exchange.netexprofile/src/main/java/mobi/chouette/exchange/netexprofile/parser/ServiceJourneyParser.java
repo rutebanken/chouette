@@ -195,7 +195,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		datedServiceJourney.setOperatingDay(TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate()));
 
 		// service journey
-
 		//VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, netexDatedServiceJourney.getExternalVehicleJourneyRef().getRef());
 		// DSJ: hardcoding references until XSD is available
 		VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, "GOA:ServiceJourney:771-O");

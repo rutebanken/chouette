@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
@@ -52,11 +53,12 @@ public class LineFilter {
 							}
 						}
 						
-						if(vehicleJourney.getTimetables().isEmpty()) {
-							log.info("Removing VJ with empty timetables: "+ vehicleJourney.getObjectId());
+						if(vehicleJourney.getTimetables().isEmpty() && vehicleJourney.getDatedServiceJourneys().isEmpty()) {
+							log.info("Removing VJ with empty timetables and no DatedServiceJourney: "+ vehicleJourney.getObjectId());
 							vjI.remove();
 						}
 					} else {
+
 						for (Iterator<Timetable> timetableI = vehicleJourney.getTimetables().iterator(); timetableI
 								.hasNext();) {
 
@@ -68,8 +70,16 @@ public class LineFilter {
 								continue;
 							}
 						}
-						if(vehicleJourney.getTimetables().isEmpty()) {
-							log.info("Removing VJ with no valid timetables: "+ vehicleJourney.getObjectId());
+
+						for (Iterator<DatedServiceJourney> datedServiceJourneyIteratorI = vehicleJourney.getDatedServiceJourneys().iterator(); datedServiceJourneyIteratorI
+								.hasNext();) {
+							if (!isDatedServiceJourneyValid(datedServiceJourneyIteratorI.next(), startDate, endDate)) {
+								datedServiceJourneyIteratorI.remove();
+							}
+						}
+
+						if(vehicleJourney.getTimetables().isEmpty() && vehicleJourney.getDatedServiceJourneys().isEmpty()) {
+							log.info("Removing VJ with no valid timetables nor valid dated service journeys: "+ vehicleJourney.getObjectId());
 							vjI.remove();
 						}
 					} // end vehiclejourney loop
@@ -94,6 +104,11 @@ public class LineFilter {
 		else
 			return timetable.isActiveOnPeriod(new LocalDate(startDate), new LocalDate(endDate));
 
+	}
+
+	private boolean isDatedServiceJourneyValid(DatedServiceJourney datedServiceJourney, Date startDate, Date endDate) {
+		LocalDate operatingDay = datedServiceJourney.getOperatingDay();
+		return (operatingDay.isAfter(new LocalDate(startDate)) && operatingDay.isBefore(new LocalDate(endDate)));
 	}
 
 }

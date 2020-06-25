@@ -62,6 +62,7 @@ public class DatedServiceJourneyUpdater implements Updater<DatedServiceJourney> 
 			oldValue.setCreationTime(newValue.getCreationTime());
 			oldValue.setCreatorId(newValue.getCreatorId());
 			oldValue.setServiceAlteration(newValue.getServiceAlteration());
+			oldValue.setOperatingDay(newValue.getOperatingDay());
 			oldValue.setDetached(false);
 		} else {
 			if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {
