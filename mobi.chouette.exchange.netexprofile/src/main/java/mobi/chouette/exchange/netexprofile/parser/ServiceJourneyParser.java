@@ -15,8 +15,6 @@ import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
-import mobi.chouette.exchange.netexprofile.util.NetexObjectUtil;
-import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.DestinationDisplay;
@@ -31,14 +29,13 @@ import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.DatedServiceJourney;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
+import org.rutebanken.netex.model.FlexibleServicePropertiesInFrame_RelStructure;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
-import org.rutebanken.netex.model.OperatingDay;
 import org.rutebanken.netex.model.ServiceJourney;
 import org.rutebanken.netex.model.TimetabledPassingTime;
 
@@ -57,155 +54,121 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getDatedServiceJourneyOrDeadRunOrServiceJourney();
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
-			if (journeyStruct instanceof ServiceJourney) {
-				parseServiceJourney(context, referential, (ServiceJourney) journeyStruct);
-			} else if(journeyStruct instanceof DatedServiceJourney) {
-				parseDatedServiceJourney(context, referential, (DatedServiceJourney) journeyStruct);
-			} else {
-				log.debug("Ignoring non-ServiceJourney and non-DatedServiceJourney with id: " + journeyStruct.getId());
+			if (! (journeyStruct instanceof ServiceJourney)) {
+				log.debug("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
+				continue;
 			}
-		}
-	}
+			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
 
-	private void parseServiceJourney(Context context, Referential referential, ServiceJourney journeyStruct) {
-		ServiceJourney serviceJourney = journeyStruct;
+			VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourney.getId());
 
-		VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourney.getId());
-
-		if (vehicleJourney.isFilled()) {
-			VehicleJourney vehicleJourneyWithVersion = ObjectFactory.getVehicleJourney(referential,
-					serviceJourney.getId() + "_" + serviceJourney.getVersion());
-			log.warn("Already parsed " + vehicleJourney.getObjectId() + ", will use version field as part of id to separate them: "
-					+ vehicleJourneyWithVersion.getObjectId());
-			vehicleJourney = vehicleJourneyWithVersion;
-		}
-
-		DayTypeRefs_RelStructure dayTypes = serviceJourney.getDayTypes();
-		if (dayTypes != null) {
-			for (JAXBElement<? extends DayTypeRefStructure> dayType : dayTypes.getDayTypeRef()) {
-				String timetableId = dayType.getValue().getRef();
-				Timetable timetable = ObjectFactory.getTimetable(referential, timetableId);
-				timetable.addVehicleJourney(vehicleJourney);
+			if (vehicleJourney.isFilled()) {
+				VehicleJourney vehicleJourneyWithVersion = ObjectFactory.getVehicleJourney(referential,
+						serviceJourney.getId() + "_" + serviceJourney.getVersion());
+				log.warn("Already parsed " + vehicleJourney.getObjectId() + ", will use version field as part of id to separate them: "
+						+ vehicleJourneyWithVersion.getObjectId());
+				vehicleJourney = vehicleJourneyWithVersion;
 			}
-		}
 
-		vehicleJourney.setObjectVersion(NetexParserUtils.getVersion(serviceJourney));
-
-		vehicleJourney.setPublishedJourneyIdentifier(serviceJourney.getPublicCode());
-
-		if (serviceJourney.getPrivateCode() != null) {
-			vehicleJourney.setPrivateCode(serviceJourney.getPrivateCode().getValue());
-		}
-
-		if (serviceJourney.getJourneyPatternRef() != null) {
-			JourneyPatternRefStructure patternRefStruct = serviceJourney.getJourneyPatternRef().getValue();
-			JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential, patternRefStruct.getRef());
-			vehicleJourney.setJourneyPattern(journeyPattern);
-		}
-
-		if (serviceJourney.getName() != null) {
-			vehicleJourney.setPublishedJourneyName(serviceJourney.getName().getValue());
-		} else {
-			JourneyPattern journeyPattern = vehicleJourney.getJourneyPattern();
-			if (journeyPattern.getDepartureStopPoint() != null) {
-				DestinationDisplay dd = journeyPattern.getDepartureStopPoint().getDestinationDisplay();
-				if (dd != null) {
-					vehicleJourney.setPublishedJourneyName(dd.getFrontText());
+			DayTypeRefs_RelStructure dayTypes = serviceJourney.getDayTypes();
+			if (dayTypes != null) {
+				for (JAXBElement<? extends DayTypeRefStructure> dayType : dayTypes.getDayTypeRef()) {
+					String timetableId = dayType.getValue().getRef();
+					Timetable timetable = ObjectFactory.getTimetable(referential, timetableId);
+					timetable.addVehicleJourney(vehicleJourney);
 				}
 			}
-		}
 
-		if (serviceJourney.getOperatorRef() != null) {
-			String operatorIdRef = serviceJourney.getOperatorRef().getRef();
-			Company company = ObjectFactory.getCompany(referential, operatorIdRef);
-			vehicleJourney.setCompany(company);
-		} else if (serviceJourney.getLineRef() != null) {
-			String lineIdRef = serviceJourney.getLineRef().getValue().getRef();
-			Company company = ObjectFactory.getLine(referential, lineIdRef).getCompany();
-			vehicleJourney.setCompany(company);
-		} else {
-			Company company = vehicleJourney.getJourneyPattern().getRoute().getLine().getCompany();
-			vehicleJourney.setCompany(company);
-		}
+			vehicleJourney.setObjectVersion(NetexParserUtils.getVersion(serviceJourney));
 
-		if (serviceJourney.getRouteRef() != null) {
-			mobi.chouette.model.Route route = ObjectFactory.getRoute(referential, serviceJourney.getRouteRef().getRef());
-			vehicleJourney.setRoute(route);
-		} else {
-			mobi.chouette.model.Route route = vehicleJourney.getJourneyPattern().getRoute();
-			vehicleJourney.setRoute(route);
-		}
+			vehicleJourney.setPublishedJourneyIdentifier(serviceJourney.getPublicCode());
 
-		if (serviceJourney.getTransportMode() != null) {
-			AllVehicleModesOfTransportEnumeration transportMode = serviceJourney.getTransportMode();
-			TransportModeNameEnum transportModeName = NetexParserUtils.toTransportModeNameEnum(transportMode.value());
-			vehicleJourney.setTransportMode(transportModeName);
-		}
-
-		vehicleJourney.setTransportSubMode(NetexParserUtils.toTransportSubModeNameEnum(serviceJourney.getTransportSubmode()));
-
-		parseTimetabledPassingTimes(context, referential, serviceJourney, vehicleJourney);
-
-		vehicleJourney.setKeyValues(keyValueParser.parse(serviceJourney.getKeyList()));
-		vehicleJourney.setServiceAlteration(NetexParserUtils.toServiceAlterationEum(serviceJourney.getServiceAlteration()));
-
-		if (serviceJourney.getFlexibleServiceProperties() != null) {
-			vehicleJourney.setFlexibleService(true);
-			mobi.chouette.model.FlexibleServiceProperties chouetteFSP = new mobi.chouette.model.FlexibleServiceProperties();
-			FlexibleServiceProperties netexFSP = serviceJourney.getFlexibleServiceProperties();
-
-			chouetteFSP.setObjectId(netexFSP.getId());
-			chouetteFSP.setObjectVersion(NetexParserUtils.getVersion(netexFSP));
-
-			chouetteFSP.setChangeOfTimePossible(netexFSP.isChangeOfTimePossible());
-			chouetteFSP.setCancellationPossible(netexFSP.isCancellationPossible());
-			chouetteFSP.setFlexibleServiceType(NetexParserUtils.toFlexibleServiceType(netexFSP.getFlexibleServiceType()));
-
-			BookingArrangement bookingArrangement = new BookingArrangement();
-			if (netexFSP.getBookingNote() != null) {
-				bookingArrangement.setBookingNote(netexFSP.getBookingNote().getValue());
+			if (serviceJourney.getPrivateCode() != null) {
+				vehicleJourney.setPrivateCode(serviceJourney.getPrivateCode().getValue());
 			}
-			bookingArrangement.setBookingAccess(NetexParserUtils.toBookingAccess(netexFSP.getBookingAccess()));
-			bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexFSP.getBookWhen()));
-			bookingArrangement.setBuyWhen(netexFSP.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
-			bookingArrangement.setBookingMethods(netexFSP.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-			bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexFSP.getLatestBookingTime()));
-			bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexFSP.getMinimumBookingPeriod()));
 
-			bookingArrangement.setBookingContact(contactStructureParser.parse(netexFSP.getBookingContact()));
+			if (serviceJourney.getJourneyPatternRef() != null) {
+				JourneyPatternRefStructure patternRefStruct = serviceJourney.getJourneyPatternRef().getValue();
+				mobi.chouette.model.JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential, patternRefStruct.getRef());
+				vehicleJourney.setJourneyPattern(journeyPattern);
+			}
 
-			chouetteFSP.setBookingArrangement(bookingArrangement);
-			vehicleJourney.setFlexibleServiceProperties(chouetteFSP);
-		}
-		vehicleJourney.setFilled(true);
-	}
+			if (serviceJourney.getName() != null) {
+				vehicleJourney.setPublishedJourneyName(serviceJourney.getName().getValue());
+			} else {
+				JourneyPattern journeyPattern = vehicleJourney.getJourneyPattern();
+				if (journeyPattern.getDepartureStopPoint() != null) {
+					DestinationDisplay dd = journeyPattern.getDepartureStopPoint().getDestinationDisplay();
+					if (dd != null) {
+						vehicleJourney.setPublishedJourneyName(dd.getFrontText());
+					}
+				}
+			}
 
-	private void parseDatedServiceJourney(Context context, Referential referential, DatedServiceJourney netexDatedServiceJourney) {
-		String datedServiceJourneyId = netexDatedServiceJourney.getId();
-		log.debug("Parsing DatedServiceJourney with id: " + datedServiceJourneyId);
-		mobi.chouette.model.DatedServiceJourney datedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyId);
+			if (serviceJourney.getOperatorRef() != null) {
+				String operatorIdRef = serviceJourney.getOperatorRef().getRef();
+				Company company = ObjectFactory.getCompany(referential, operatorIdRef);
+				vehicleJourney.setCompany(company);
+			} else if (serviceJourney.getLineRef() != null) {
+				String lineIdRef = serviceJourney.getLineRef().getValue().getRef();
+				Company company = ObjectFactory.getLine(referential, lineIdRef).getCompany();
+				vehicleJourney.setCompany(company);
+			} else {
+				Company company = vehicleJourney.getJourneyPattern().getRoute().getLine().getCompany();
+				vehicleJourney.setCompany(company);
+			}
 
-		// operating day
-		NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
-		String operatingDayRefId = netexDatedServiceJourney.getOperatingDayRef().getRef();
-		OperatingDay operatingDay = NetexObjectUtil.getOperatingDay(netexReferential, operatingDayRefId);
-		datedServiceJourney.setOperatingDay(TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate()));
+			if (serviceJourney.getRouteRef() != null) {
+				mobi.chouette.model.Route route = ObjectFactory.getRoute(referential, serviceJourney.getRouteRef().getRef());
+				vehicleJourney.setRoute(route);
+			} else {
+				mobi.chouette.model.Route route = vehicleJourney.getJourneyPattern().getRoute();
+				vehicleJourney.setRoute(route);
+			}
 
-		// service journey
-		//VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, netexDatedServiceJourney.getExternalVehicleJourneyRef().getRef());
-		// DSJ: hardcoding references until XSD is available
-		VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, "GOA:ServiceJourney:771-O");
-		datedServiceJourney.setVehicleJourney(vehicleJourney);
+			if (serviceJourney.getTransportMode() != null) {
+				AllVehicleModesOfTransportEnumeration transportMode = serviceJourney.getTransportMode();
+				TransportModeNameEnum transportModeName = NetexParserUtils.toTransportModeNameEnum(transportMode.value());
+				vehicleJourney.setTransportMode(transportModeName);
+			}
 
-		// derived from dated service journey
-		if(netexDatedServiceJourney.getDerivedFromObjectRef() != null) {
-			mobi.chouette.model.DatedServiceJourney derivedFromDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, netexDatedServiceJourney.getDerivedFromObjectRef());
-			datedServiceJourney.setDerivedFromDatedServiceJourney(derivedFromDatedServiceJourney);
-		}
+			vehicleJourney.setTransportSubMode(NetexParserUtils.toTransportSubModeNameEnum(serviceJourney.getTransportSubmode()));
 
-		// service alteration
-		if(netexDatedServiceJourney.getServiceAlteration() != null) {
-			datedServiceJourney.setServiceAlteration(NetexParserUtils.toServiceAlterationEum(netexDatedServiceJourney.getServiceAlteration()));
+			parseTimetabledPassingTimes(context, referential, serviceJourney, vehicleJourney);
+
+			vehicleJourney.setKeyValues(keyValueParser.parse(serviceJourney.getKeyList()));
+			vehicleJourney.setServiceAlteration(NetexParserUtils.toServiceAlterationEum(serviceJourney.getServiceAlteration()));
+
+			if (serviceJourney.getFlexibleServiceProperties() != null) {
+				vehicleJourney.setFlexibleService(true);
+				mobi.chouette.model.FlexibleServiceProperties chouetteFSP = new mobi.chouette.model.FlexibleServiceProperties();
+				FlexibleServiceProperties netexFSP = serviceJourney.getFlexibleServiceProperties();
+
+				chouetteFSP.setObjectId(netexFSP.getId());
+				chouetteFSP.setObjectVersion(NetexParserUtils.getVersion(netexFSP));
+
+				chouetteFSP.setChangeOfTimePossible(netexFSP.isChangeOfTimePossible());
+				chouetteFSP.setCancellationPossible(netexFSP.isCancellationPossible());
+				chouetteFSP.setFlexibleServiceType(NetexParserUtils.toFlexibleServiceType(netexFSP.getFlexibleServiceType()));
+
+				BookingArrangement bookingArrangement = new BookingArrangement();
+				if (netexFSP.getBookingNote() != null) {
+					bookingArrangement.setBookingNote(netexFSP.getBookingNote().getValue());
+				}
+				bookingArrangement.setBookingAccess(NetexParserUtils.toBookingAccess(netexFSP.getBookingAccess()));
+				bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexFSP.getBookWhen()));
+				bookingArrangement.setBuyWhen(netexFSP.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
+				bookingArrangement.setBookingMethods(netexFSP.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
+				bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexFSP.getLatestBookingTime()));
+				bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexFSP.getMinimumBookingPeriod()));
+
+				bookingArrangement.setBookingContact(contactStructureParser.parse(netexFSP.getBookingContact()));
+
+				chouetteFSP.setBookingArrangement(bookingArrangement);
+				vehicleJourney.setFlexibleServiceProperties(chouetteFSP);
+			}
+			vehicleJourney.setFilled(true);
+
 		}
 	}
 
