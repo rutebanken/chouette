@@ -258,6 +258,9 @@ public class NorwayLineNetexProfileValidatorTest {
 		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_TRANSPORTMODE_OVERRIDE, NOK);
 		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION, NOK);
 
+		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_OPERATINGDAYREF, OK);
+		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION, OK);
+
 		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_SERVICE_FRAME_STOP_POINT_ILLEGAL_BOOKINGACCESS, OK);
 		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_SERVICE_FRAME_STOP_POINT_ILLEGAL_BOOKINGMETHODS, OK);
 		expectedResults.put(AbstractNorwayNetexProfileValidator._1_NETEX_SERVICE_FRAME_STOP_POINT_ILLEGAL_BOOKWHEN, OK);

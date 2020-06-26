@@ -123,6 +123,11 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_TRANSPORTMODE_OVERRIDE = "1-NETEXPROFILE-TimetableFrame_ServiceJourney_TransportModeOverride";
 	public static final String _1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION = "1-NETEXPROFILE-TimetableFrame_ServiceJourney_DuplicateWithDifferentVersion";
 
+	public static final String _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_OPERATINGDAYREF = "1-NETEXPROFILE-TimetableFrame-DatedServiceJourney-OperatingDayRef";
+	public static final String _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION = "1-NETEXPROFILE-TimetableFrame_DatedServiceJourney_DuplicateWithDifferentVersion" ;
+
+
+
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_BOOKINGCONTACT = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_BookingContact";
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_BOOKINGMETHODS = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_BookingMethods";
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_ID = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_Id";
@@ -268,8 +273,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_MISSING_PASSING_TIME, "E");
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_TRANSPORTMODE_OVERRIDE, "W");
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION, "W");
-		
-		
+
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_OPERATINGDAYREF, "E");
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION, "W");
+
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_COMPANY_NUMBER, "I");
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_NAME, "E");
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_LEGAL_NAME, "I");
