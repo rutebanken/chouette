@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.ConnectionLink;
+import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
@@ -21,6 +22,8 @@ import mobi.chouette.model.util.NeptuneUtil;
 
 import org.joda.time.LocalDate;
 
+import javax.ejb.Local;
+
 @Log4j
 public class DataCollector {
 
@@ -32,6 +35,7 @@ public class DataCollector {
 		collection.getJourneyPatterns().clear();
 		collection.getStopPoints().clear();
 		collection.getVehicleJourneys().clear();
+		collection.getDatedServiceJourneys().clear();
 		collection.getFootnotes().clear();
 
 		for (Route route : line.getRoutes()) {
@@ -62,8 +66,14 @@ public class DataCollector {
 								}
 							}
 						}
+
+						if (!vehicleJourney.getDatedServiceJourneys().isEmpty()) {
+							isValid = true;
+						}
+
 						if (isValid) {
 							collection.getTimetables().addAll(vehicleJourney.getTimetables());
+							collection.getDatedServiceJourneys().addAll(vehicleJourney.getDatedServiceJourneys());
 							collection.getVehicleJourneys().add(vehicleJourney);
 							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
 							for(VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
@@ -97,10 +107,16 @@ public class DataCollector {
 							}
 							isVehicleJourneyValid |= isTimetableValid;
 						}
+
+						isVehicleJourneyValid = isVehicleJourneyValid || vehicleJourney.getDatedServiceJourneys().stream().anyMatch(dsj -> dsj.isValidOnPeriod(startDate, endDate));
+
 						if (isVehicleJourneyValid) {
 							collection.getVehicleJourneys().add(vehicleJourney);
 							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
 							collection.getFootnotes().addAll(vehicleJourney.getFootnotes());
+
+							collection.getDatedServiceJourneys().addAll(vehicleJourney.getDatedServiceJourneys());
+
 							for(VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
 								collection.getFootnotes().addAll(vjas.getFootnotes());
 							}

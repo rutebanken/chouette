@@ -22,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -107,5 +108,21 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
     @Column(name = "service_alteration")
     private ServiceAlterationEnum serviceAlteration;
 
+
+    /**
+     * Return true if the operating day is within the interval [startDate, endDate[ (startDate inclusive, endDate exclusive).
+     */
+    public boolean isValidOnPeriod(Date startDate, Date endDate) {
+        LocalDate localStartDate = new LocalDate(startDate);
+        LocalDate localEndDate = new LocalDate(endDate);
+        return isValidOnPeriod(localStartDate, localEndDate);
+    }
+
+    /**
+     * Return true if the operating day is within the interval [startDate, endDate[ (startDate inclusive, endDate exclusive).
+     */
+    public boolean isValidOnPeriod(LocalDate localStartDate, LocalDate localEndDate) {
+        return ( (  operatingDay.isEqual(localStartDate) || operatingDay.isAfter(localStartDate) ) && operatingDay.isBefore(localEndDate));
+    }
 
 }

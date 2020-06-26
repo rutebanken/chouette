@@ -73,7 +73,7 @@ public class LineFilter {
 
 						for (Iterator<DatedServiceJourney> datedServiceJourneyIteratorI = vehicleJourney.getDatedServiceJourneys().iterator(); datedServiceJourneyIteratorI
 								.hasNext();) {
-							if (!isDatedServiceJourneyValid(datedServiceJourneyIteratorI.next(), startDate, endDate)) {
+							if (!datedServiceJourneyIteratorI.next().isValidOnPeriod(startDate, endDate)) {
 								datedServiceJourneyIteratorI.remove();
 							}
 						}
@@ -106,9 +106,6 @@ public class LineFilter {
 
 	}
 
-	private boolean isDatedServiceJourneyValid(DatedServiceJourney datedServiceJourney, Date startDate, Date endDate) {
-		LocalDate operatingDay = datedServiceJourney.getOperatingDay();
-		return (operatingDay.isAfter(new LocalDate(startDate)) && operatingDay.isBefore(new LocalDate(endDate)));
-	}
+
 
 }

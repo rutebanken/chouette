@@ -57,9 +57,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getDatedServiceJourneyOrDeadRunOrServiceJourney();
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
-			if (! (journeyStruct instanceof ServiceJourney)) {
-
-			}
 			if (journeyStruct instanceof ServiceJourney) {
 				parseServiceJourney(context, referential, (ServiceJourney) journeyStruct);
 			} else if(journeyStruct instanceof DatedServiceJourney) {
