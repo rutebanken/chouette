@@ -4,6 +4,7 @@ import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
 import mobi.chouette.dao.CompanyDAO;
+import mobi.chouette.dao.DatedServiceJourneyDAO;
 import mobi.chouette.dao.FootnoteDAO;
 import mobi.chouette.dao.InterchangeDAO;
 import mobi.chouette.dao.JourneyFrequencyDAO;
@@ -42,6 +43,9 @@ import java.util.List;
 public class DatedServiceJourneyUpdater implements Updater<DatedServiceJourney> {
 
 	public static final String BEAN_NAME = "DatedServiceJourneyUpdater";
+
+	@EJB
+	private DatedServiceJourneyDAO datedServiceJourneyDAO;
 
 
 	@Override
@@ -86,15 +90,29 @@ public class DatedServiceJourneyUpdater implements Updater<DatedServiceJourney> 
 					&& !newValue.getOperatingDay().equals(oldValue.getOperatingDay())) {
 				oldValue.setOperatingDay(newValue.getOperatingDay());
 			}
-
-			if (newValue.getVehicleJourney() != null) {
-				oldValue.setVehicleJourney(newValue.getVehicleJourney());
-			}
-			if (newValue.getDerivedFromDatedServiceJourney() != null) {
-				oldValue.setDerivedFromDatedServiceJourney(newValue.getDerivedFromDatedServiceJourney());
-			}
-
 		}
+
+		// derived from dated service journey
+		// Company
+		if (newValue.getDerivedFromDatedServiceJourney() == null) {
+			oldValue.setDerivedFromDatedServiceJourney(null);
+		} else {
+			String objectId = newValue.getDerivedFromDatedServiceJourney().getObjectId();
+			DatedServiceJourney datedServiceJourney = cache.getDatedServiceJourneys().get(objectId);
+			if (datedServiceJourney == null) {
+				datedServiceJourney = datedServiceJourneyDAO.findByObjectId(objectId);
+				if (datedServiceJourney != null) {
+					cache.getDatedServiceJourneys().put(objectId, datedServiceJourney);
+				}
+			}
+
+			if (datedServiceJourney == null) {
+				datedServiceJourney = ObjectFactory.getDatedServiceJourney(cache, objectId);
+			}
+			oldValue.setDerivedFromDatedServiceJourney(datedServiceJourney);
+			this.update(context, oldValue.getDerivedFromDatedServiceJourney(), newValue.getDerivedFromDatedServiceJourney());
+		}
+
 
 	}
 }
