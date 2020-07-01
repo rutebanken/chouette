@@ -12,10 +12,14 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.rutebanken.netex.model.DatedServiceJourney;
+import org.rutebanken.netex.model.DatedServiceJourneyRefStructure;
+import org.rutebanken.netex.model.JourneyRefStructure;
 import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
 import org.rutebanken.netex.model.OperatingDay;
+import org.rutebanken.netex.model.ServiceJourneyRefStructure;
 
+import javax.xml.bind.JAXBElement;
 import java.util.List;
 
 @Log4j
@@ -48,18 +52,18 @@ public class DatedServiceJourneyParser extends NetexParser implements Parser, Co
         OperatingDay operatingDay = NetexObjectUtil.getOperatingDay(netexReferential, operatingDayRefId);
         datedServiceJourney.setOperatingDay(TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate()));
 
-        // service journey
-        //VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, netexDatedServiceJourney.getExternalVehicleJourneyRef().getRef());
-        // DSJ: hardcoding references until XSD is available
-        //VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, "GOA:ServiceJourney:771-O");
-        // DSJ: using PublicCode until XSD is available
-        VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, netexDatedServiceJourney.getPublicCode());
-        datedServiceJourney.setVehicleJourney(vehicleJourney);
-
-        // derived from dated service journey
-        if (netexDatedServiceJourney.getDerivedFromObjectRef() != null) {
-            mobi.chouette.model.DatedServiceJourney derivedFromDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, netexDatedServiceJourney.getDerivedFromObjectRef());
-            datedServiceJourney.setDerivedFromDatedServiceJourney(derivedFromDatedServiceJourney);
+        // service journey and derived from dated service journey
+        for (JAXBElement<? extends JourneyRefStructure> jaxbJourneyRefStructure : netexDatedServiceJourney.getJourneyRef()) {
+            JourneyRefStructure journeyRefStructure = jaxbJourneyRefStructure.getValue();
+            if (journeyRefStructure instanceof ServiceJourneyRefStructure) {
+                ServiceJourneyRefStructure serviceJourneyRefStructure = (ServiceJourneyRefStructure) journeyRefStructure;
+                VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourneyRefStructure.getRef());
+                datedServiceJourney.setVehicleJourney(vehicleJourney);
+            } else if (journeyRefStructure instanceof DatedServiceJourneyRefStructure) {
+                DatedServiceJourneyRefStructure datedServiceJourneyRefStructure = (DatedServiceJourneyRefStructure) journeyRefStructure;
+                mobi.chouette.model.DatedServiceJourney derivedFromDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyRefStructure.getRef());
+                datedServiceJourney.setDerivedFromDatedServiceJourney(derivedFromDatedServiceJourney);
+            }
         }
 
         // service alteration

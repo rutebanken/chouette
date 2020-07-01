@@ -20,6 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.DatedServiceJourneyRefStructure;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
@@ -36,6 +37,7 @@ import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
 import org.rutebanken.netex.model.TimetabledPassingTime;
 import org.rutebanken.netex.model.TimetabledPassingTimes_RelStructure;
 
+import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
@@ -67,12 +69,21 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 		}
 
 		// service journey
-		//ServiceJourneyRefStructure serviceJourneyRefStructure =  netexFactory.createServiceJourneyRefStructure();
-		//netexDatedServiceJourney.setServiceJourneyRef(serviceJourneyRefStructure);
+		ServiceJourneyRefStructure serviceJourneyRefStructure =  netexFactory.createServiceJourneyRefStructure();
+		serviceJourneyRefStructure.setRef(datedServiceJourney.getVehicleJourney().getObjectId());
+		serviceJourneyRefStructure.setVersion("0");
+		JAXBElement<ServiceJourneyRefStructure> serviceJourneyRef = netexFactory.createServiceJourneyRef(serviceJourneyRefStructure);
+		serviceJourneyRef.setValue(serviceJourneyRefStructure);
+		netexDatedServiceJourney.getJourneyRef().add(serviceJourneyRef);
+
 
 		// derived from dated service journey
 		if(datedServiceJourney.getDerivedFromDatedServiceJourney() != null) {
-			netexDatedServiceJourney.setDerivedFromObjectRef(datedServiceJourney.getDerivedFromDatedServiceJourney().getObjectId());
+			DatedServiceJourneyRefStructure datedServiceJourneyRefStructure = netexFactory.createDatedServiceJourneyRefStructure();
+			datedServiceJourneyRefStructure.setRef(datedServiceJourney.getDerivedFromDatedServiceJourney().getObjectId());
+			datedServiceJourneyRefStructure.setVersion("0");
+			JAXBElement<ServiceJourneyRefStructure> datedServiceJourneyRefStructureJAXBElement = netexFactory.createDatedServiceJourneyRef(datedServiceJourneyRefStructure);
+			netexDatedServiceJourney.getJourneyRef().add(datedServiceJourneyRefStructureJAXBElement);
 		}
 
 		// service alteration
