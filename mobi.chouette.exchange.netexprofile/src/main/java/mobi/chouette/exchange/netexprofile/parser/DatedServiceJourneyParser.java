@@ -55,14 +55,15 @@ public class DatedServiceJourneyParser extends NetexParser implements Parser, Co
         // service journey and derived from dated service journey
         for (JAXBElement<? extends JourneyRefStructure> jaxbJourneyRefStructure : netexDatedServiceJourney.getJourneyRef()) {
             JourneyRefStructure journeyRefStructure = jaxbJourneyRefStructure.getValue();
-            if (journeyRefStructure instanceof ServiceJourneyRefStructure) {
-                ServiceJourneyRefStructure serviceJourneyRefStructure = (ServiceJourneyRefStructure) journeyRefStructure;
-                VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourneyRefStructure.getRef());
-                datedServiceJourney.setVehicleJourney(vehicleJourney);
-            } else if (journeyRefStructure instanceof DatedServiceJourneyRefStructure) {
+
+            if (journeyRefStructure instanceof DatedServiceJourneyRefStructure) {
                 DatedServiceJourneyRefStructure datedServiceJourneyRefStructure = (DatedServiceJourneyRefStructure) journeyRefStructure;
                 mobi.chouette.model.DatedServiceJourney derivedFromDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyRefStructure.getRef());
                 datedServiceJourney.setDerivedFromDatedServiceJourney(derivedFromDatedServiceJourney);
+            } else if (journeyRefStructure instanceof ServiceJourneyRefStructure) {
+                ServiceJourneyRefStructure serviceJourneyRefStructure = (ServiceJourneyRefStructure) journeyRefStructure;
+                VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourneyRefStructure.getRef());
+                datedServiceJourney.setVehicleJourney(vehicleJourney);
             }
         }
 

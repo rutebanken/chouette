@@ -62,7 +62,7 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 		netexDatedServiceJourney.setOperatingDayRef(operatingDayRefStructure);
 		if (!exportableNetexData.getSharedOperatingDays().containsKey(operatingDayId)) {
 			OperatingDay netexOperatingDay= netexFactory.createOperatingDay();
-			netexOperatingDay.setVersion("0");
+			netexOperatingDay.setVersion("1");
 			netexOperatingDay.setId(operatingDayId);
 			netexOperatingDay.setCalendarDate(TimeUtil.toLocalDateFromJoda(operatingDay).atStartOfDay());
 			exportableNetexData.getSharedOperatingDays().put(netexOperatingDay.getId(), netexOperatingDay);
@@ -71,7 +71,7 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 		// service journey
 		ServiceJourneyRefStructure serviceJourneyRefStructure =  netexFactory.createServiceJourneyRefStructure();
 		serviceJourneyRefStructure.setRef(datedServiceJourney.getVehicleJourney().getObjectId());
-		serviceJourneyRefStructure.setVersion("0");
+		NetexProducerUtils.populateReference(datedServiceJourney.getVehicleJourney(), serviceJourneyRefStructure, true);
 		JAXBElement<ServiceJourneyRefStructure> serviceJourneyRef = netexFactory.createServiceJourneyRef(serviceJourneyRefStructure);
 		serviceJourneyRef.setValue(serviceJourneyRefStructure);
 		netexDatedServiceJourney.getJourneyRef().add(serviceJourneyRef);
@@ -80,9 +80,8 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 		// derived from dated service journey
 		if(datedServiceJourney.getDerivedFromDatedServiceJourney() != null) {
 			DatedServiceJourneyRefStructure datedServiceJourneyRefStructure = netexFactory.createDatedServiceJourneyRefStructure();
-			datedServiceJourneyRefStructure.setRef(datedServiceJourney.getDerivedFromDatedServiceJourney().getObjectId());
-			datedServiceJourneyRefStructure.setVersion("0");
-			JAXBElement<ServiceJourneyRefStructure> datedServiceJourneyRefStructureJAXBElement = netexFactory.createDatedServiceJourneyRef(datedServiceJourneyRefStructure);
+			NetexProducerUtils.populateReference(datedServiceJourney.getDerivedFromDatedServiceJourney(), datedServiceJourneyRefStructure, true);
+			JAXBElement<DatedServiceJourneyRefStructure> datedServiceJourneyRefStructureJAXBElement = netexFactory.createDatedServiceJourneyRef(datedServiceJourneyRefStructure);
 			netexDatedServiceJourney.getJourneyRef().add(datedServiceJourneyRefStructureJAXBElement);
 		}
 

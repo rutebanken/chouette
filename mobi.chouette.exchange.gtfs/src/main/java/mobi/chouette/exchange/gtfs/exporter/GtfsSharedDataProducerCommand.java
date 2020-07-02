@@ -169,7 +169,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			CalendarDay calendarDay = new CalendarDay();
 			calendarDay.setDate(datedServiceJourney.getOperatingDay());
 			calendarDay.setIncluded(true);
-			calendarProducer.saveDay(datedServiceJourney.getObjectId(), calendarDay);
+			calendarProducer.saveDay(datedServiceJourney.getVehicleJourney().getObjectId(), calendarDay);
 		}
 
 	}
