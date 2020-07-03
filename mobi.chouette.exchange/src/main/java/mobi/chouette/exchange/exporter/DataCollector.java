@@ -274,26 +274,31 @@ public class DataCollector {
 	}
 
 	private boolean isVehicleJourneyValid(VehicleJourney vehicleJourney, ExportableData collection, LocalDate startDate, LocalDate endDate) {
-		for (Timetable timetable : vehicleJourney.getTimetables()) {
-			boolean isTimetableValid = false;
-			if (collection.getTimetables().contains(timetable)) {
-				isTimetableValid = true;
-			} else if (collection.getExcludedTimetables().contains(timetable)) {
-				isTimetableValid = false;
-			} else {
+		if(vehicleJourney.hasTimetables()) {
+			for (Timetable timetable : vehicleJourney.getTimetables()) {
+				boolean isTimetableValid = false;
+				if (collection.getTimetables().contains(timetable)) {
+					isTimetableValid = true;
+				} else if (collection.getExcludedTimetables().contains(timetable)) {
+					isTimetableValid = false;
+				} else {
 
-				if (startDate == null)
-					isTimetableValid = timetable.isActiveBefore(endDate);
-				else if (endDate == null)
-					isTimetableValid = timetable.isActiveAfter(startDate);
-				else
-					isTimetableValid = timetable.isActiveOnPeriod(startDate, endDate);
-			}
+					if (startDate == null)
+						isTimetableValid = timetable.isActiveBefore(endDate);
+					else if (endDate == null)
+						isTimetableValid = timetable.isActiveAfter(startDate);
+					else
+						isTimetableValid = timetable.isActiveOnPeriod(startDate, endDate);
+				}
 
-			if (isTimetableValid) {
-				return true;
+				if (isTimetableValid) {
+					return true;
+				}
 			}
+		} else if(vehicleJourney.hasDatedServiceJourneys()) {
+			return vehicleJourney.getDatedServiceJourneys().stream().anyMatch(dsj -> dsj.isValidOnPeriod(startDate,endDate));
 		}
+
 		return false;
 	}
 
