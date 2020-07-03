@@ -52,8 +52,8 @@ public class LineFilter {
 								timetableI.remove();
 							}
 						}
-						
-						if(vehicleJourney.getTimetables().isEmpty() && vehicleJourney.getDatedServiceJourneys().isEmpty()) {
+
+						if (!vehicleJourney.hasTimetables() && !vehicleJourney.hasDatedServiceJourneys()) {
 							log.info("Removing VJ with empty timetables and no DatedServiceJourney: "+ vehicleJourney.getObjectId());
 							vjI.remove();
 						}
@@ -78,7 +78,7 @@ public class LineFilter {
 							}
 						}
 
-						if(vehicleJourney.getTimetables().isEmpty() && vehicleJourney.getDatedServiceJourneys().isEmpty()) {
+						if(!vehicleJourney.hasTimetables() && !vehicleJourney.hasDatedServiceJourneys()) {
 							log.info("Removing VJ with no valid timetables nor valid dated service journeys: "+ vehicleJourney.getObjectId());
 							vjI.remove();
 						}

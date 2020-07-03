@@ -167,9 +167,8 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		}
 
 		for (DatedServiceJourney datedServiceJourney : datedServiceJourneys) {
-			ServiceAlterationEnum serviceAlterationEnum = datedServiceJourney.getServiceAlteration();
 			// replaced and cancelled services are excluded from the GTFS export.
-			if (ServiceAlterationEnum.Cancellation != serviceAlterationEnum && ServiceAlterationEnum.Replaced != serviceAlterationEnum) {
+			if (datedServiceJourney.isActive()) {
 				CalendarDay calendarDay = new CalendarDay();
 				calendarDay.setDate(datedServiceJourney.getOperatingDay());
 				calendarDay.setIncluded(true);

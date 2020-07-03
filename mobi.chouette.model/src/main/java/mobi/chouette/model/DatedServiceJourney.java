@@ -125,4 +125,12 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
         return ( (  operatingDay.isEqual(localStartDate) || operatingDay.isAfter(localStartDate) ) && operatingDay.isBefore(localEndDate));
     }
 
+    /**
+     * Return true if the DatedServiceJourney is neither cancelled nor replaced
+     */
+    public boolean isActive() {
+        ServiceAlterationEnum serviceAlterationEnum = getServiceAlteration();
+        return ServiceAlterationEnum.Cancellation != serviceAlterationEnum && ServiceAlterationEnum.Replaced != serviceAlterationEnum;
+    }
+
 }

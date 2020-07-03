@@ -67,7 +67,7 @@ public class DataCollector {
 							}
 						}
 
-						if (!vehicleJourney.getDatedServiceJourneys().isEmpty()) {
+						if (vehicleJourney.hasDatedServiceJourneys()) {
 							isValid = true;
 						}
 

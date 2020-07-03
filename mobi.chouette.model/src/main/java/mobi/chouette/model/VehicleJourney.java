@@ -448,13 +448,28 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@JoinColumn(name = "flexible_service_properties_id")
 	private FlexibleServiceProperties flexibleServiceProperties;
 
+	public boolean hasDatedServiceJourneys() {
+		return !getDatedServiceJourneys().isEmpty();
+	}
+
+	public boolean hasTimetables() {
+		return !getTimetables().isEmpty();
+	}
+
 	public SortedSet<LocalDate> getActiveDates() {
-		Set<LocalDate> includedDates = getTimetables().stream().map(Timetable::getActiveDates).flatMap(Set::stream).collect(Collectors.toSet());
 
-		// Assuming exclusions across Timetables take precedent, so need to make sure all excluded dates are actually excluded
-		Set<LocalDate> excludedDates = getTimetables().stream().map(Timetable::getExcludedDates).flatMap(List::stream).collect(Collectors.toSet());
+		if (hasTimetables()) {
+			Set<LocalDate> includedDates = getTimetables().stream().map(Timetable::getActiveDates).flatMap(Set::stream).collect(Collectors.toSet());
 
-		includedDates.removeAll(excludedDates);
-		return new TreeSet<>(includedDates);
+			// Assuming exclusions across Timetables take precedent, so need to make sure all excluded dates are actually excluded
+			Set<LocalDate> excludedDates = getTimetables().stream().map(Timetable::getExcludedDates).flatMap(List::stream).collect(Collectors.toSet());
+
+			includedDates.removeAll(excludedDates);
+			return new TreeSet<>(includedDates);
+		} else if (hasDatedServiceJourneys()) {
+			return getDatedServiceJourneys().stream().filter(DatedServiceJourney::isActive).map(DatedServiceJourney::getOperatingDay).collect(Collectors.toCollection(TreeSet::new));
+		} else {
+			return new TreeSet<>();
+		}
 	}
 }
