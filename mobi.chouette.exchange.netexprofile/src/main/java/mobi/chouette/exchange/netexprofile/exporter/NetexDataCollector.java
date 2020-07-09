@@ -14,13 +14,17 @@ import mobi.chouette.model.Route;
 @Log4j
 public class NetexDataCollector extends DataCollector {
 
-	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
-		boolean res = collect(collection, line, startDate, endDate, false, false);
+	public NetexDataCollector(mobi.chouette.exchange.exporter.ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
+		super(collection, line, startDate, endDate, false, false);
+	}
+
+	@Override
+	public boolean collect() {
+		boolean res = super.collect();
 
 		if (line.getNetwork().getCompany() != null) {
 			collection.getCompanies().add(line.getNetwork().getCompany());
 		}
-
 
 		// Remove any routes or journey patterns without active vehicle journeys.
 		List<Route> activeRoutes = collection.getVehicleJourneys().stream().map(vj -> vj.getRoute()).distinct().collect(Collectors.toList());

@@ -65,21 +65,14 @@ public class TransferExportDataLoader implements Command, Constant {
 		log.info("Loading all lines...");
 		List<Line> allLines = lineDAO.findAll();
 		
-		List<Line> lineToTransfer = new ArrayList<>();
-		
-		LineFilter lineFilter = new LineFilter();
-
 		log.info("Filtering lines");
+		List<Line> lineToTransfer = new ArrayList<>();
 		for (Line line : allLines) {
-			// Clean according to date rules
-			// Clean obsolete data
-			boolean shouldKeep = lineFilter.filter(line, configuration.getStartDate(), configuration.getEndDate());
-
+			boolean shouldKeep = line.filter(configuration.getStartDate(), configuration.getEndDate());
 			if (shouldKeep) {
 				lineToTransfer.add(line);
 			}
 		}
-		
 		log.info("Filtering lines completed");
 		log.info("Removing Hibernate proxies");
 		HibernateDeproxynator<?> deProxy = new HibernateDeproxynator<>();
