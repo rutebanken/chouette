@@ -454,38 +454,25 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * Return the day offset at the last stop
+	 * Return the day offset at the last stop.
 	 */
 	private int getDayOffSetAtLastStop() {
 		return getVehicleJourneyAtStops().stream().map(VehicleJourneyAtStop::getArrivalDayOffset).max(Integer::compare).orElse(0);
 	}
 
 	/**
-	 * Return the day offset at the first stop
+	 * Return the day offset at the first stop.
 	 */
 	private int getDayOffSetAtFirstStop() {
 		return getVehicleJourneyAtStops().stream().map(VehicleJourneyAtStop::getDepartureDayOffset).min(Integer::compare).orElse(0);
 	}
 
-	private boolean isTimetableActiveOnPeriod(Timetable timetable, LocalDate startDate, LocalDate endDate) {
-		if (timetable.getPeriods().isEmpty() && timetable.getCalendarDays().isEmpty()) {
-			return false;
-		}
-		if(startDate == null && endDate == null) {
-			return true;
-		}
-		if (startDate == null) {
-			return timetable.isActiveBefore(new LocalDate(endDate));
-		} else {
-			if (endDate == null) {
-				return timetable.isActiveAfter(new LocalDate(startDate));
-			} else {
-				return timetable.isActiveOnPeriod(new LocalDate(startDate), new LocalDate(endDate));
-			}
-		}
-	}
-
-	public List<Timetable> getActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
+	/**
+	 * Get the effective start date of a period, taking into account the day offset at last stop.
+	 * @param startDate the start date of the period (inclusive).
+	 * @return the effective start date of the period, taking into account the day offset at last stop.
+	 */
+	private LocalDate getEffectiveStartDate(LocalDate startDate) {
 		final LocalDate effectiveStartDate;
 		if (startDate != null) {
 			int dayOffSetAtLastStop = getDayOffSetAtLastStop();
@@ -496,20 +483,41 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 		} else {
 			effectiveStartDate = null;
 		}
+		return effectiveStartDate;
+	}
+
+	/**
+	 * Get the effective end date of a period, taking into account the day offset at first stop.
+	 * @param endDate the end date of the period  (exclusive).
+	 * @return the effective end date of the period, taking into account the day offset at last stop.
+	 */
+	private LocalDate getEffectiveEndDate(LocalDate endDate) {
 		final LocalDate effectiveEndDate;
 		if (endDate != null) {
 			int dayOffSetAtFirstStop = getDayOffSetAtFirstStop();
-			effectiveEndDate = endDate.minusDays(getDayOffSetAtFirstStop());
+			effectiveEndDate = endDate.minusDays(dayOffSetAtFirstStop);
 			if(dayOffSetAtFirstStop != 0 && log.isTraceEnabled()) {
 				log.trace("VJ " + getObjectId() + ": Day offset at first stop: " + dayOffSetAtFirstStop + " day(s), shifting effective end date of active period: "  + endDate + " --> " +  effectiveEndDate);
 			}
 		} else {
 			effectiveEndDate = null;
 		}
-		return getTimetables().stream().filter(t -> isTimetableActiveOnPeriod(t, effectiveStartDate, effectiveEndDate)).collect(Collectors.toList());
+		return effectiveEndDate;
 	}
 
-    public boolean hasActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
+	/**
+	 * Retrieve the list of active timetables on the period, taking into account the day offset at first stop and last stop.
+	 * @param startDate the start date of the period (inclusive).
+	 * @param endDate the end date of the period (exclusive).
+	 * @return the list of timetables active on the period, taking into account the day offset at first stop and last stop.
+	 */
+	public List<Timetable> getActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
+		final LocalDate effectiveStartDate = getEffectiveStartDate(startDate);
+		final LocalDate effectiveEndDate = getEffectiveEndDate(endDate);
+		return getTimetables().stream().filter(t -> t.isActiveOnPeriod(effectiveStartDate, effectiveEndDate)).collect(Collectors.toList());
+	}
+
+	public boolean hasActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
 		return !getActiveTimetablesOnPeriod(startDate, endDate).isEmpty();
-    }
+	}
 }
