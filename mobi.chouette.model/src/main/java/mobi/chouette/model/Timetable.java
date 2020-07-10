@@ -411,7 +411,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 	 * @param aDay
 	 * @return true if timetable is active on given date
 	 */
-	public boolean isActiveOn(final LocalDate aDay) {
+	private boolean isActiveOn(final LocalDate aDay) {
 		if (getCalendarDays() != null) {
 			CalendarDay includedDay = new CalendarDay(aDay, true);
 			if (getCalendarDays().contains(includedDay))
