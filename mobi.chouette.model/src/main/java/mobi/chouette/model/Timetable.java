@@ -27,7 +27,6 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.DayTypeEnum;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -436,15 +435,33 @@ public class Timetable extends NeptuneIdentifiedObject {
 		return false;
 	}
 
-	public boolean isActiveBefore(final LocalDate aDay) {
-		return isActiveOnPeriod(getStartOfPeriod(), aDay);
+	public boolean isActiveOnPeriod(LocalDate startDate, LocalDate endDate) {
+		if (getPeriods().isEmpty() && getCalendarDays().isEmpty()) {
+			return false;
+		}
+		if(startDate == null && endDate == null) {
+			return true;
+		}
+		if (startDate == null) {
+			return isActiveBefore(new LocalDate(endDate));
+		} else {
+			if (endDate == null) {
+				return isActiveAfter(new LocalDate(startDate));
+			} else {
+				return isActiveBetween(new LocalDate(startDate), new LocalDate(endDate));
+			}
+		}
 	}
 
-	public boolean isActiveAfter(final LocalDate aDay) {
-		return isActiveOnPeriod(aDay, getEndOfPeriod());
+	private boolean isActiveBefore(final LocalDate aDay) {
+		return isActiveBetween(getStartOfPeriod(), aDay);
 	}
 
-	public boolean isActiveOnPeriod(final LocalDate start, final LocalDate end) {
+	private boolean isActiveAfter(final LocalDate aDay) {
+		return isActiveBetween(aDay, getEndOfPeriod());
+	}
+
+	private boolean isActiveBetween(final LocalDate start, final LocalDate end) {
 		if(start == null || end == null) {
 			return false;
 		} else {
