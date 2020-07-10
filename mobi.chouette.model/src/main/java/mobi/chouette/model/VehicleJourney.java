@@ -32,7 +32,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -491,8 +490,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 		if (startDate != null) {
 			int dayOffSetAtLastStop = getDayOffSetAtLastStop();
 			effectiveStartDate = startDate.minusDays(dayOffSetAtLastStop);
-			if(dayOffSetAtLastStop != 0 && log.isDebugEnabled()) {
-				log.debug("VJ " + getObjectId() + ": Day offset at last stop: " + dayOffSetAtLastStop + " day(s), shifting effective start date of active period: "  + startDate + " --> " +  effectiveStartDate);
+			if(dayOffSetAtLastStop != 0 && log.isTraceEnabled()) {
+				log.trace("VJ " + getObjectId() + ": Day offset at last stop: " + dayOffSetAtLastStop + " day(s), shifting effective start date of active period: "  + startDate + " --> " +  effectiveStartDate);
 			}
 		} else {
 			effectiveStartDate = null;
@@ -501,8 +500,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 		if (endDate != null) {
 			int dayOffSetAtFirstStop = getDayOffSetAtFirstStop();
 			effectiveEndDate = endDate.minusDays(getDayOffSetAtFirstStop());
-			if(dayOffSetAtFirstStop != 0 && log.isDebugEnabled()) {
-				log.debug("VJ " + getObjectId() + ": Day offset at first stop: " + dayOffSetAtFirstStop + " day(s), shifting effective end date of active period: "  + endDate + " --> " +  effectiveEndDate);
+			if(dayOffSetAtFirstStop != 0 && log.isTraceEnabled()) {
+				log.trace("VJ " + getObjectId() + ": Day offset at first stop: " + dayOffSetAtFirstStop + " day(s), shifting effective end date of active period: "  + endDate + " --> " +  effectiveEndDate);
 			}
 		} else {
 			effectiveEndDate = null;

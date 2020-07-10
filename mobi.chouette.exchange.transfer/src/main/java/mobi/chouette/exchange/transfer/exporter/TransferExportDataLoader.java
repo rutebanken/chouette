@@ -3,9 +3,9 @@ package mobi.chouette.exchange.transfer.exporter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -64,24 +64,20 @@ public class TransferExportDataLoader implements Command, Constant {
 
 		log.info("Loading all lines...");
 		List<Line> allLines = lineDAO.findAll();
-		
 		log.info("Filtering lines");
-		List<Line> lineToTransfer = new ArrayList<>();
-		for (Line line : allLines) {
-			boolean shouldKeep = line.filter(configuration.getStartDate(), configuration.getEndDate());
-			if (shouldKeep) {
-				lineToTransfer.add(line);
-			}
-		}
+		List<Line> linesToTransfer = allLines
+				.stream()
+				.filter(line -> line.filter(configuration.getStartDate(), configuration.getEndDate()))
+				.collect(Collectors.toList());
 		log.info("Filtering lines completed");
 		log.info("Removing Hibernate proxies");
 		HibernateDeproxynator<?> deProxy = new HibernateDeproxynator<>();
-		lineToTransfer = deProxy.deepDeproxy(lineToTransfer);
+		linesToTransfer = deProxy.deepDeproxy(linesToTransfer);
 		log.info("Removing Hibernate proxies completed");
 		
 
 		em.clear();
-		return lineToTransfer;
+		return linesToTransfer;
 	}
 
 	public static class DefaultCommandFactory extends CommandFactory {
