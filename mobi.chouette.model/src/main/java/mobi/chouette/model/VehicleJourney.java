@@ -457,14 +457,14 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	 * Return the day offset at the last stop.
 	 */
 	private int getDayOffSetAtLastStop() {
-		return getVehicleJourneyAtStops().stream().map(VehicleJourneyAtStop::getArrivalDayOffset).max(Integer::compare).orElse(0);
+		return getVehicleJourneyAtStops().stream().filter(vjas -> vjas.getArrivalTime() != null).map(VehicleJourneyAtStop::getArrivalDayOffset).max(Integer::compare).orElse(0);
 	}
 
 	/**
 	 * Return the day offset at the first stop.
 	 */
 	private int getDayOffSetAtFirstStop() {
-		return getVehicleJourneyAtStops().stream().map(VehicleJourneyAtStop::getDepartureDayOffset).min(Integer::compare).orElse(0);
+		return getVehicleJourneyAtStops().stream().filter(vjas -> vjas.getDepartureTime() != null).map(VehicleJourneyAtStop::getDepartureDayOffset).min(Integer::compare).orElse(0);
 	}
 
 	/**
