@@ -488,7 +488,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * Get the effective end date of a period, taking into account the day offset at first stop.
-	 * @param endDate the end date of the period  (exclusive).
+	 * @param endDate the end date of the period  (inclusive).
 	 * @return the effective end date of the period, taking into account the day offset at last stop.
 	 */
 	private LocalDate getEffectiveEndDate(LocalDate endDate) {
@@ -508,7 +508,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * Retrieve the list of active timetables on the period, taking into account the day offset at first stop and last stop.
 	 * @param startDate the start date of the period (inclusive).
-	 * @param endDate the end date of the period (exclusive).
+	 * @param endDate the end date of the period (inclusive).
 	 * @return the list of timetables active on the period, taking into account the day offset at first stop and last stop.
 	 */
 	public List<Timetable> getActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
