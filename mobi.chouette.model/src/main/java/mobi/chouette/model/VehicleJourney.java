@@ -32,7 +32,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -468,12 +467,13 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	}
 
 	public boolean hasStops() {
-		return ! getVehicleJourneyAtStops().isEmpty();
+		return !getVehicleJourneyAtStops().isEmpty();
 	}
 
 	public boolean hasTimetables() {
-		return ! getTimetables().isEmpty();
+		return !getTimetables().isEmpty();
 	}
+
 
 	public boolean hasDatedServiceJourneys() {
 		return !getDatedServiceJourneys().isEmpty();
@@ -483,18 +483,19 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	 * Return the day offset at the last stop.
 	 */
 	private int getDayOffSetAtLastStop() {
-		return getVehicleJourneyAtStops().stream().map(VehicleJourneyAtStop::getArrivalDayOffset).max(Integer::compare).orElse(0);
+		return getVehicleJourneyAtStops().stream().filter(vjas -> vjas.getArrivalTime() != null).map(VehicleJourneyAtStop::getArrivalDayOffset).max(Integer::compare).orElse(0);
 	}
 
 	/**
 	 * Return the day offset at the first stop.
 	 */
 	private int getDayOffSetAtFirstStop() {
-		return getVehicleJourneyAtStops().stream().map(VehicleJourneyAtStop::getDepartureDayOffset).min(Integer::compare).orElse(0);
+		return getVehicleJourneyAtStops().stream().filter(vjas -> vjas.getDepartureTime() != null).map(VehicleJourneyAtStop::getDepartureDayOffset).min(Integer::compare).orElse(0);
 	}
 
 	/**
 	 * Get the effective start date of a period, taking into account the day offset at last stop.
+	 *
 	 * @param startDate the start date of the period (inclusive).
 	 * @return the effective start date of the period, taking into account the day offset at last stop.
 	 */
@@ -503,8 +504,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 		if (startDate != null) {
 			int dayOffSetAtLastStop = getDayOffSetAtLastStop();
 			effectiveStartDate = startDate.minusDays(dayOffSetAtLastStop);
-			if(dayOffSetAtLastStop != 0 && log.isTraceEnabled()) {
-				log.trace("VJ " + getObjectId() + ": Day offset at last stop: " + dayOffSetAtLastStop + " day(s), shifting effective start date of active period: "  + startDate + " --> " +  effectiveStartDate);
+			if (dayOffSetAtLastStop != 0 && log.isTraceEnabled()) {
+				log.trace("VJ " + getObjectId() + ": Day offset at last stop: " + dayOffSetAtLastStop + " day(s), shifting effective start date of active period: " + startDate + " --> " + effectiveStartDate);
 			}
 		} else {
 			effectiveStartDate = null;
@@ -514,7 +515,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * Get the effective end date of a period, taking into account the day offset at first stop.
-	 * @param endDate the end date of the period  (exclusive).
+	 *
+	 * @param endDate the end date of the period  (inclusive).
 	 * @return the effective end date of the period, taking into account the day offset at last stop.
 	 */
 	private LocalDate getEffectiveEndDate(LocalDate endDate) {
@@ -522,8 +524,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 		if (endDate != null) {
 			int dayOffSetAtFirstStop = getDayOffSetAtFirstStop();
 			effectiveEndDate = endDate.minusDays(dayOffSetAtFirstStop);
-			if(dayOffSetAtFirstStop != 0 && log.isTraceEnabled()) {
-				log.trace("VJ " + getObjectId() + ": Day offset at first stop: " + dayOffSetAtFirstStop + " day(s), shifting effective end date of active period: "  + endDate + " --> " +  effectiveEndDate);
+			if (dayOffSetAtFirstStop != 0 && log.isTraceEnabled()) {
+				log.trace("VJ " + getObjectId() + ": Day offset at first stop: " + dayOffSetAtFirstStop + " day(s), shifting effective end date of active period: " + endDate + " --> " + effectiveEndDate);
 			}
 		} else {
 			effectiveEndDate = null;
@@ -533,8 +535,9 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * Retrieve the list of active timetables on the period, taking into account the day offset at first stop and last stop.
+	 *
 	 * @param startDate the start date of the period (inclusive).
-	 * @param endDate the end date of the period (exclusive).
+	 * @param endDate   the end date of the period (inclusive).
 	 * @return the list of timetables active on the period, taking into account the day offset at first stop and last stop.
 	 */
 	public List<Timetable> getActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
@@ -543,9 +546,9 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 		return getTimetables().stream().filter(t -> t.isActiveOnPeriod(effectiveStartDate, effectiveEndDate)).collect(Collectors.toList());
 	}
 
-	private boolean hasActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
+	public boolean hasActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
 		return !getActiveTimetablesOnPeriod(startDate, endDate).isEmpty();
-    }
+	}
 
 	/**
 	 * Retrieve the list of active dated service journeys on the period, taking into account the day offset at first stop and last stop.
@@ -566,6 +569,4 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	public boolean isActiveOnPeriod(LocalDate startDate, LocalDate endDate) {
 		return hasActiveTimetablesOnPeriod(startDate, endDate) || hasActiveDatedServiceJourneysOnPeriod(startDate, endDate);
 	}
-
-
 }
