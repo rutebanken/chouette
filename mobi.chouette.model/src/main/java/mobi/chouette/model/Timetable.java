@@ -27,7 +27,6 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.DayTypeEnum;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
