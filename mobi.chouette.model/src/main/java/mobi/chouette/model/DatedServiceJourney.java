@@ -87,9 +87,7 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
     @Getter
     @Setter
     @OneToMany(mappedBy = "derivedFromDatedServiceJourney")
-    private List<DatedServiceJourney> derivedDatedServiceJourneys = new ArrayList<DatedServiceJourney>(
-            0);
-
+    private List<DatedServiceJourney> derivedDatedServiceJourneys = new ArrayList<>(0);
 
     /**
      * Operating day
@@ -108,21 +106,11 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
     @Column(name = "service_alteration")
     private ServiceAlterationEnum serviceAlteration;
 
-
     /**
-     * Return true if the operating day is within the interval [startDate, endDate[ (startDate inclusive, endDate exclusive).
-     */
-    public boolean isValidOnPeriod(Date startDate, Date endDate) {
-        LocalDate localStartDate = new LocalDate(startDate);
-        LocalDate localEndDate = new LocalDate(endDate);
-        return isValidOnPeriod(localStartDate, localEndDate);
-    }
-
-    /**
-     * Return true if the operating day is within the interval [startDate, endDate[ (startDate inclusive, endDate exclusive).
+     * Return true if the operating day is within the interval (startDate inclusive, endDate inclusive).
      */
     public boolean isValidOnPeriod(LocalDate localStartDate, LocalDate localEndDate) {
-        return ( (  operatingDay.isEqual(localStartDate) || operatingDay.isAfter(localStartDate) ) && operatingDay.isBefore(localEndDate));
+        return operatingDay.isEqual(localStartDate) || operatingDay.isEqual(localEndDate) || (operatingDay.isAfter(localStartDate) && operatingDay.isBefore(localEndDate));
     }
 
     /**
