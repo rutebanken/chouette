@@ -22,8 +22,12 @@ public class VehicleJourneyTest {
 	LocalDate mar6Friday = new LocalDate(2020, 3, 6);
 	LocalDate mar7Saturday = new LocalDate(2020, 3, 7);
 
+	private final LocalDate firstOfJuly2020 = new LocalDate(2020, 7, 1);
+	private final LocalDate tenthOfJuly2020 = new LocalDate(2020, 7, 10);
 	private final LocalDate fifteenthOfJuly2020 = new LocalDate(2020, 7, 15);
 	private final LocalDate fifteenthOfAugust2020 = new LocalDate(2020, 8, 15);
+	private final LocalDate seventeenthOfAugust = new LocalDate(2020, 8, 17);
+	private final LocalDate thirtiethOfAugust2020 = new LocalDate(2020, 8, 30);
 
 
 	@Test
@@ -51,8 +55,6 @@ public class VehicleJourneyTest {
 		VehicleJourney vehicleJourney = new VehicleJourney();
 
 		TimetableBuilder timeTableBuilder = new TimetableBuilder();
-		LocalDate firstOfJuly2020 = new LocalDate(2020, 7, 1);
-		LocalDate tenthOfJuly2020 = new LocalDate(2020, 7, 10);
 		Timetable timetable = timeTableBuilder
 				.withPeriod(firstOfJuly2020, tenthOfJuly2020)
 				.withDayTypes(DayTypeEnum.Monday)
@@ -85,8 +87,6 @@ public class VehicleJourneyTest {
 		VehicleJourney vehicleJourney = new VehicleJourney();
 
 		TimetableBuilder timeTableBuilder = new TimetableBuilder();
-		LocalDate firstOfJuly2020 = new LocalDate(2020, 7, 1);
-		LocalDate tenthOfJuly2020 = new LocalDate(2020, 7, 10);
 		Timetable timetable = timeTableBuilder
 				.withPeriod(firstOfJuly2020, tenthOfJuly2020)
 				.withDayTypes(DayTypeEnum.Monday)
@@ -120,8 +120,6 @@ public class VehicleJourneyTest {
 		VehicleJourney vehicleJourney = new VehicleJourney();
 
 		TimetableBuilder timeTableBuilder = new TimetableBuilder();
-		LocalDate seventeenthOfAugust = new LocalDate(2020, 8, 17);
-		LocalDate thirtiethOfAugust2020 = new LocalDate(2020, 8, 30);
 		Timetable timetable = timeTableBuilder
 				.withPeriod(seventeenthOfAugust, thirtiethOfAugust2020)
 				.withDayTypes(DayTypeEnum.Monday)
@@ -155,9 +153,8 @@ public class VehicleJourneyTest {
 		VehicleJourney vehicleJourney = new VehicleJourney();
 
 		TimetableBuilder timeTableBuilder = new TimetableBuilder();
-		LocalDate thirtiethOfAugust = new LocalDate(2020, 8, 30);
 		Timetable timetable = timeTableBuilder
-				.withPeriod(fifteenthOfAugust2020, thirtiethOfAugust)
+				.withPeriod(fifteenthOfAugust2020, thirtiethOfAugust2020)
 				.withDayTypes(DayTypeEnum.Monday, DayTypeEnum.Tuesday, DayTypeEnum.Wednesday, DayTypeEnum.Thursday, DayTypeEnum.Friday, DayTypeEnum.Saturday, DayTypeEnum.Sunday)
 				.build();
 
@@ -176,7 +173,7 @@ public class VehicleJourneyTest {
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");
 		Assert.assertTrue(vehicleJourney.hasTimetables(), "The vehicle journey should have at least one timetable");
 
-		Assert.assertFalse(vehicleJourney.hasActiveTimetablesOnPeriod(fifteenthOfJuly2020, fifteenthOfAugust2020), "The vehicle journey should have an active timetable on the period");
+		Assert.assertFalse(vehicleJourney.hasActiveTimetablesOnPeriod(fifteenthOfJuly2020, fifteenthOfAugust2020), "The vehicle journey should not have an active timetable on the period");
 
 	}
 
@@ -191,9 +188,8 @@ public class VehicleJourneyTest {
 		VehicleJourney vehicleJourney = new VehicleJourney();
 
 		TimetableBuilder timeTableBuilder = new TimetableBuilder();
-		LocalDate tenthOfJuly = new LocalDate(2020, 8, 30);
 		Timetable timetable = timeTableBuilder
-				.withPeriod(tenthOfJuly, fifteenthOfJuly2020)
+				.withPeriod(tenthOfJuly2020, fifteenthOfJuly2020)
 				.withDayTypes(DayTypeEnum.Monday, DayTypeEnum.Tuesday, DayTypeEnum.Wednesday, DayTypeEnum.Thursday, DayTypeEnum.Friday, DayTypeEnum.Saturday, DayTypeEnum.Sunday)
 				.build();
 
@@ -212,7 +208,7 @@ public class VehicleJourneyTest {
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");
 		Assert.assertTrue(vehicleJourney.hasTimetables(), "The vehicle journey should have at least one timetable");
 
-		Assert.assertFalse(vehicleJourney.hasActiveTimetablesOnPeriod(fifteenthOfJuly2020, fifteenthOfAugust2020), "The vehicle journey should have an active timetable on the period");
+		Assert.assertFalse(vehicleJourney.hasActiveTimetablesOnPeriod(fifteenthOfJuly2020, fifteenthOfAugust2020), "The vehicle journey should not have an active timetable on the period");
 
 	}
 
