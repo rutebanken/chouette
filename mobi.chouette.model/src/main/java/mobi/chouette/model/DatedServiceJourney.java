@@ -18,12 +18,16 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -63,20 +67,17 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
     }
 
     /**
-     * Original dated service journey.
+     * Original dated service journeys.
      */
     @Getter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "derived_from_id")
-    private DatedServiceJourney derivedFromDatedServiceJourney;
+    @ManyToMany
+    @JoinTable(name = "original_dsjs", joinColumns = { @JoinColumn(name = "derived_dsj_id") }, inverseJoinColumns = { @JoinColumn(name = "original_dsj_id") })
+    private List<DatedServiceJourney> originalDatedServiceJourneys = new ArrayList<>();
 
-    public void setDerivedFromDatedServiceJourney(DatedServiceJourney derivedFromDatedServiceJourney) {
-        if (this.derivedFromDatedServiceJourney != null) {
-            this.derivedFromDatedServiceJourney.getDerivedDatedServiceJourneys().remove(this);
-        }
-        this.derivedFromDatedServiceJourney = derivedFromDatedServiceJourney;
-        if (derivedFromDatedServiceJourney != null) {
-            derivedFromDatedServiceJourney.getDerivedDatedServiceJourneys().add(this);
+    public void addOriginalDatedServiceJourney(DatedServiceJourney originalDatedServiceJourney) {
+        if(originalDatedServiceJourney != null) {
+            originalDatedServiceJourney.getDerivedDatedServiceJourneys().add(this);
+            originalDatedServiceJourneys.add(originalDatedServiceJourney);
         }
     }
 
@@ -92,9 +93,9 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
      */
 
     @Getter
-    @Setter
-    @OneToMany(mappedBy = "derivedFromDatedServiceJourney")
-    private List<DatedServiceJourney> derivedDatedServiceJourneys = new ArrayList<>(0);
+    @ManyToMany(mappedBy = "originalDatedServiceJourneys")
+    private List<DatedServiceJourney> derivedDatedServiceJourneys = new ArrayList<>();
+
 
     /**
      * Operating day
