@@ -58,8 +58,8 @@ public class DatedServiceJourneyParser extends NetexParser implements Parser, Co
 
             if (journeyRefStructure instanceof DatedServiceJourneyRefStructure) {
                 DatedServiceJourneyRefStructure datedServiceJourneyRefStructure = (DatedServiceJourneyRefStructure) journeyRefStructure;
-                mobi.chouette.model.DatedServiceJourney derivedFromDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyRefStructure.getRef());
-                datedServiceJourney.setDerivedFromDatedServiceJourney(derivedFromDatedServiceJourney);
+                mobi.chouette.model.DatedServiceJourney originalDatedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyRefStructure.getRef());
+                datedServiceJourney.addOriginalDatedServiceJourney(originalDatedServiceJourney);
             } else if (journeyRefStructure instanceof ServiceJourneyRefStructure) {
                 ServiceJourneyRefStructure serviceJourneyRefStructure = (ServiceJourneyRefStructure) journeyRefStructure;
                 VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourneyRefStructure.getRef());

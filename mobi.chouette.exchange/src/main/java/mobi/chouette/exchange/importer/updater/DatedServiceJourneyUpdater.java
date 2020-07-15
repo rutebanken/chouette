@@ -19,6 +19,7 @@ import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.Footnote;
+import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.JourneyFrequency;
 import mobi.chouette.model.Route;
@@ -92,27 +93,37 @@ public class DatedServiceJourneyUpdater implements Updater<DatedServiceJourney> 
 			}
 		}
 
-		// derived from dated service journey
-		// Company
-		if (newValue.getDerivedFromDatedServiceJourney() == null) {
-			oldValue.setDerivedFromDatedServiceJourney(null);
-		} else {
-			String objectId = newValue.getDerivedFromDatedServiceJourney().getObjectId();
-			DatedServiceJourney datedServiceJourney = cache.getDatedServiceJourneys().get(objectId);
+		Collection<DatedServiceJourney> addedOriginalDatedServiceJourney = CollectionUtil.substract(newValue.getOriginalDatedServiceJourneys(),
+				oldValue.getOriginalDatedServiceJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+		List<DatedServiceJourney> datedServiceJourneys = null;
+		for (DatedServiceJourney item : addedOriginalDatedServiceJourney) {
+			DatedServiceJourney datedServiceJourney = cache.getDatedServiceJourneys().get(item.getObjectId());
 			if (datedServiceJourney == null) {
-				datedServiceJourney = datedServiceJourneyDAO.findByObjectId(objectId);
-				if (datedServiceJourney != null) {
-					cache.getDatedServiceJourneys().put(objectId, datedServiceJourney);
+				if (datedServiceJourneys == null) {
+					datedServiceJourneys = datedServiceJourneyDAO.findByObjectId(UpdaterUtils.getObjectIds(addedOriginalDatedServiceJourney));
+					for (DatedServiceJourney object : datedServiceJourneys) {
+						cache.getDatedServiceJourneys().put(object.getObjectId(), object);
+					}
 				}
+				datedServiceJourney = cache.getDatedServiceJourneys().get(item.getObjectId());
 			}
-
 			if (datedServiceJourney == null) {
-				datedServiceJourney = ObjectFactory.getDatedServiceJourney(cache, objectId);
+				datedServiceJourney = ObjectFactory.getDatedServiceJourney(cache, item.getObjectId());
 			}
-			oldValue.setDerivedFromDatedServiceJourney(datedServiceJourney);
-			this.update(context, oldValue.getDerivedFromDatedServiceJourney(), newValue.getDerivedFromDatedServiceJourney());
+			oldValue.addOriginalDatedServiceJourney(datedServiceJourney);
 		}
 
+		Collection<Pair<DatedServiceJourney, DatedServiceJourney>> modifiedDatedServiceJourney = CollectionUtil.intersection(
+				oldValue.getOriginalDatedServiceJourneys(), newValue.getOriginalDatedServiceJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (Pair<DatedServiceJourney, DatedServiceJourney> pair : modifiedDatedServiceJourney) {
+			update(context, pair.getLeft(), pair.getRight());
+		}
+
+		Collection<DatedServiceJourney> removedDatedServiceJourney = CollectionUtil.substract(oldValue.getOriginalDatedServiceJourneys(),
+				newValue.getOriginalDatedServiceJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (DatedServiceJourney datedServiceJourney : removedDatedServiceJourney) {
+			oldValue.removeOriginalDatedServiceJourney(datedServiceJourney);
+		}
 
 	}
 }

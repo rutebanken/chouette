@@ -80,6 +80,13 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
         }
     }
 
+    public void removeOriginalDatedServiceJourney(DatedServiceJourney originalDatedServiceJourney) {
+        if(originalDatedServiceJourney != null) {
+            originalDatedServiceJourney.getDerivedDatedServiceJourneys().remove(this);
+            originalDatedServiceJourneys.remove(originalDatedServiceJourney);
+        }
+    }
+
     /**
      * Dated service journeys derived from this one.
      */

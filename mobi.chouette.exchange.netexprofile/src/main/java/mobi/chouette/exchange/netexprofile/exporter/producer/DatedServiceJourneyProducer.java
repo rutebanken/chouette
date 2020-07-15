@@ -78,15 +78,17 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 
 
 		// derived from dated service journey
-		if(datedServiceJourney.getDerivedFromDatedServiceJourney() != null) {
-			DatedServiceJourneyRefStructure datedServiceJourneyRefStructure = netexFactory.createDatedServiceJourneyRefStructure();
-			NetexProducerUtils.populateReference(datedServiceJourney.getDerivedFromDatedServiceJourney(), datedServiceJourneyRefStructure, true);
-			JAXBElement<DatedServiceJourneyRefStructure> datedServiceJourneyRefStructureJAXBElement = netexFactory.createDatedServiceJourneyRef(datedServiceJourneyRefStructure);
-			netexDatedServiceJourney.getJourneyRef().add(datedServiceJourneyRefStructureJAXBElement);
+		if (!datedServiceJourney.getOriginalDatedServiceJourneys().isEmpty()) {
+			for (DatedServiceJourney originalDatedServiceJourney : datedServiceJourney.getOriginalDatedServiceJourneys()) {
+				DatedServiceJourneyRefStructure originalDatedServiceJourneyRefStructure = netexFactory.createDatedServiceJourneyRefStructure();
+				NetexProducerUtils.populateReference(originalDatedServiceJourney, originalDatedServiceJourneyRefStructure, true);
+				JAXBElement<DatedServiceJourneyRefStructure> originalDatedServiceJourneyRefStructureJAXBElement = netexFactory.createDatedServiceJourneyRef(originalDatedServiceJourneyRefStructure);
+				netexDatedServiceJourney.getJourneyRef().add(originalDatedServiceJourneyRefStructureJAXBElement);
+			}
 		}
 
 		// service alteration
-		if(datedServiceJourney.getServiceAlteration() != null) {
+		if (datedServiceJourney.getServiceAlteration() != null) {
 			netexDatedServiceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(datedServiceJourney.getServiceAlteration()));
 		}
 
