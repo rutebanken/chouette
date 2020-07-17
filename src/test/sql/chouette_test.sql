@@ -2830,21 +2830,21 @@ create unique index if not exists dated_service_journeys_objectid_key
 
 alter sequence dated_service_journeys_id_seq owner to chouette;
 
-create table if not exists original_dsjs
+create table if not exists  dated_service_journey_refs
 (
     original_dsj_id integer
-        constraint original_dsjs_original_dsj_id_fkey
+        constraint  dated_service_journey_refs_original_dsj_id_fkey
             references  dated_service_journeys,
     derived_dsj_id integer
-        constraint original_dsjs_derived_dsj_id_fkey
+        constraint  dated_service_journey_refs_derived_dsj_id_fkey
             references  dated_service_journeys
 );
 
-alter table original_dsjs owner to chouette;
+alter table  dated_service_journey_refs owner to chouette;
 
-create unique index original_dsjs_original_dsj_id_derived_dsj_id_key
-    on  original_dsjs (original_dsj_id, derived_dsj_id);
+create unique index  dated_service_journey_refs_original_dsj_id_derived_dsj_id_key
+    on   dated_service_journey_refs (original_dsj_id, derived_dsj_id);
 
-create index original_dsjs_derived_dsj_id_idx
-    on  original_dsjs (derived_dsj_id);
+create index  dated_service_journey_refs_derived_dsj_id_idx
+    on   dated_service_journey_refs (derived_dsj_id);
 

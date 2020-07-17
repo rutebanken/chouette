@@ -67,7 +67,7 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
      */
     @Getter
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    @JoinTable(name = "original_dsjs", joinColumns = {@JoinColumn(name = "derived_dsj_id")}, inverseJoinColumns = {@JoinColumn(name = "original_dsj_id")})
+    @JoinTable(name = " dated_service_journey_refs", joinColumns = {@JoinColumn(name = "derived_dsj_id")}, inverseJoinColumns = {@JoinColumn(name = "original_dsj_id")})
     private List<DatedServiceJourney> originalDatedServiceJourneys = new ArrayList<>();
 
     public void addOriginalDatedServiceJourney(DatedServiceJourney originalDatedServiceJourney) {
