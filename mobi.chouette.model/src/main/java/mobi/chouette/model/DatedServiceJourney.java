@@ -21,19 +21,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
 @Table(name = "dated_service_journeys")
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = {"journeyPattern", "derivedFromDatedServiceJourney"})
+@ToString(callSuper = true, exclude = {"vehicleJourney", "originalDatedServiceJourneys", "derivedDatedServiceJourneys"})
 public class DatedServiceJourney extends NeptuneIdentifiedObject {
 
     private static final long serialVersionUID = 8392587538821947318L;
@@ -70,19 +66,19 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
      * Original dated service journeys.
      */
     @Getter
-    @ManyToMany
-    @JoinTable(name = "original_dsjs", joinColumns = { @JoinColumn(name = "derived_dsj_id") }, inverseJoinColumns = { @JoinColumn(name = "original_dsj_id") })
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(name = "original_dsjs", joinColumns = {@JoinColumn(name = "derived_dsj_id")}, inverseJoinColumns = {@JoinColumn(name = "original_dsj_id")})
     private List<DatedServiceJourney> originalDatedServiceJourneys = new ArrayList<>();
 
     public void addOriginalDatedServiceJourney(DatedServiceJourney originalDatedServiceJourney) {
-        if(originalDatedServiceJourney != null) {
+        if (originalDatedServiceJourney != null) {
             originalDatedServiceJourney.getDerivedDatedServiceJourneys().add(this);
             originalDatedServiceJourneys.add(originalDatedServiceJourney);
         }
     }
 
     public void removeOriginalDatedServiceJourney(DatedServiceJourney originalDatedServiceJourney) {
-        if(originalDatedServiceJourney != null) {
+        if (originalDatedServiceJourney != null) {
             originalDatedServiceJourney.getDerivedDatedServiceJourneys().remove(this);
             originalDatedServiceJourneys.remove(originalDatedServiceJourney);
         }
