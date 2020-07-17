@@ -2818,11 +2818,8 @@ create table if not exists dated_service_journeys
     creator_id varchar(255),
     operating_day date not null,
     vehicle_journey_id integer not null
-        constraint service_journeys_fkey
-            references vehicle_journeys,
-    derived_from_id integer
-        constraint derived_from_fkey
-            references dated_service_journeys,
+        constraint dated_service_journeys_vehicle_journey_id_fkey
+            references  vehicle_journeys,
     service_alteration varchar
 );
 
@@ -2832,3 +2829,22 @@ create unique index if not exists dated_service_journeys_objectid_key
     on dated_service_journeys (objectid);
 
 alter sequence dated_service_journeys_id_seq owner to chouette;
+
+create table if not exists original_dsjs
+(
+    original_dsj_id integer
+        constraint original_dsjs_original_dsj_id_fkey
+            references  dated_service_journeys,
+    derived_dsj_id integer
+        constraint original_dsjs_derived_dsj_id_fkey
+            references  dated_service_journeys
+);
+
+alter table original_dsjs owner to chouette;
+
+create unique index original_dsjs_original_dsj_id_derived_dsj_id_key
+    on  original_dsjs (original_dsj_id, derived_dsj_id);
+
+create index original_dsjs_derived_dsj_id_idx
+    on  original_dsjs (derived_dsj_id);
+
