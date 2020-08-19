@@ -42,7 +42,6 @@ public class DataCollector {
 		collection.getJourneyPatterns().clear();
 		collection.getStopPoints().clear();
 		collection.getVehicleJourneys().clear();
-		collection.getDatedServiceJourneys().clear();
 		collection.getFootnotes().clear();
 
 		boolean isValid = line.filter(startDate, endDate);
