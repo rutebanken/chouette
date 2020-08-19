@@ -34,6 +34,7 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Timetable;
@@ -152,7 +153,8 @@ public class GtfsLineProducerCommand implements Command, Constant {
 							}
 						}
 					}
-				} else if(vj.hasDatedServiceJourneys()) {
+				} else if(vj.hasDatedServiceJourneys()
+				   && vj.getDatedServiceJourneys().stream().anyMatch(DatedServiceJourney::isActive)) {
 					if (tripProducer.save(vj, vj.getObjectId(), prefix, sharedPrefix, configuration.isKeepOriginalId())) {
 						hasVj = true;
 						jps.add(vj.getJourneyPattern());
