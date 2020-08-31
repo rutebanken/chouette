@@ -447,6 +447,14 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		mainPartRefSubstitutions.add("JourneyPart");
 		allowedSubstitutions.put("MainPartRef", mainPartRefSubstitutions);
 
+		Set<String> fromStopPointRefSubstitutions = new HashSet<>();
+		fromStopPointRefSubstitutions.add("ScheduledStopPoint");
+		allowedSubstitutions.put("FromStopPointRef", fromStopPointRefSubstitutions);
+
+		Set<String> toStopPointRefSubstitutions = new HashSet<>();
+		toStopPointRefSubstitutions.add("ScheduledStopPoint");
+		allowedSubstitutions.put("ToStopPointRef", toStopPointRefSubstitutions);
+
 		boolean foundErrors = false;
 
 		for (IdVersion id : localRefs) {
