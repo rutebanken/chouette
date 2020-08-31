@@ -443,9 +443,9 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		lineRefSubstitutions.add("FlexibleLine");
 		allowedSubstitutions.put("LineRef", lineRefSubstitutions);
 
-		Set<String> externalVehicleJourneyRefSubstitutions = new HashSet<>();
-		externalVehicleJourneyRefSubstitutions.add("ServiceJourney");
-		allowedSubstitutions.put("ExternalVehicleJourneyRef", externalVehicleJourneyRefSubstitutions);
+		Set<String> mainPartRefSubstitutions = new HashSet<>();
+		mainPartRefSubstitutions.add("JourneyPart");
+		allowedSubstitutions.put("MainPartRef", mainPartRefSubstitutions);
 
 		boolean foundErrors = false;
 
