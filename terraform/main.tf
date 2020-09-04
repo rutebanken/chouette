@@ -15,8 +15,17 @@ resource "google_storage_bucket" "storage_bucket" {
   name               = "${var.bucket_instance_prefix}-${var.bucket_instance_suffix}"
   location           = var.location
   project            = var.gcp_gcs_project
-  storage_class      = var.storage_class
+  storage_class      = var.bucket_storage_class
   labels             = var.labels
+
+  lifecycle_rule {
+    condition {
+      age = var.bucket_retention_period
+    }
+    action {
+      type = "Delete"
+    }
+  }
 }
 
 # create service account

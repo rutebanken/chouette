@@ -38,9 +38,14 @@ variable "bucket_instance_prefix" {
   default     = "ror-chouette"
 }
 
-variable "storage_class" {
+variable "bucket_storage_class" {
   description = "GCP storage class"
   default     = "REGIONAL"
+}
+
+variable "bucket_retention_period" {
+  description = "Retention period for GCS objects, in days"
+  default     = "105"
 }
 
 variable "load_config_file" {
