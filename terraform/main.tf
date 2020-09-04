@@ -42,7 +42,7 @@ resource "google_storage_bucket_iam_member" "old_storage_bucket_iam_member" {
 
 # add service account as member to storage bucket
 resource "google_storage_bucket_iam_member" "storage_bucket_iam_member" {
-  bucket = "${google_storage_bucket.storage_bucket.name}."
+  bucket = google_storage_bucket.storage_bucket.name
   role   = var.service_account_bucket_role
   member = "serviceAccount:${google_service_account.chouette_service_account.email}"
 }
@@ -59,7 +59,7 @@ resource "kubernetes_secret" "chouette_service_account_credentials" {
     namespace = var.kube_namespace
   }
   data = {
-    "credentials.json" = "${base64decode(google_service_account_key.chouette_service_account_key.private_key)}"
+    "credentials.json" = base64decode(google_service_account_key.chouette_service_account_key.private_key)
   }
 }
 
