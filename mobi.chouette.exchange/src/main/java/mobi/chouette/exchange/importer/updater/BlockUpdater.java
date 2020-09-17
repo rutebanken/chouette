@@ -1,0 +1,95 @@
+package mobi.chouette.exchange.importer.updater;
+
+import mobi.chouette.common.CollectionUtil;
+import mobi.chouette.common.Context;
+import mobi.chouette.common.Pair;
+import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.model.Block;
+import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.util.ObjectFactory;
+import mobi.chouette.model.util.Referential;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Collection;
+import java.util.List;
+
+@Stateless(name = BlockUpdater.BEAN_NAME)
+public class BlockUpdater implements Updater<Block> {
+
+    public static final String BEAN_NAME = "BlockUpdater";
+
+    @EJB(beanName = VehicleJourneyUpdater.BEAN_NAME)
+    private Updater<VehicleJourney> vehicleJourneyUpdater;
+
+    @EJB
+    private VehicleJourneyDAO vehicleJourneyDAO;
+
+    @Override
+    public void update(Context context, Block oldValue, Block newValue) throws Exception {
+
+        if (newValue.isSaved()) {
+            return;
+        }
+        newValue.setSaved(true);
+
+        Referential cache = (Referential) context.get(CACHE);
+        cache.getBlocks().put(oldValue.getObjectId(), oldValue);
+
+        if (oldValue.isDetached()) {
+            // object does not exist in database
+            oldValue.setObjectId(newValue.getObjectId());
+            oldValue.setObjectVersion(newValue.getObjectVersion());
+            oldValue.setCreationTime(newValue.getCreationTime());
+            oldValue.setCreatorId(newValue.getCreatorId());
+            oldValue.setPrivateCode(newValue.getPrivateCode());
+            oldValue.setDetached(false);
+        } else {
+            if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {
+                oldValue.setObjectId(newValue.getObjectId());
+            }
+            if (newValue.getObjectVersion() != null && !newValue.getObjectVersion().equals(oldValue.getObjectVersion())) {
+                oldValue.setObjectVersion(newValue.getObjectVersion());
+            }
+            if (newValue.getCreationTime() != null && !newValue.getCreationTime().equals(oldValue.getCreationTime())) {
+                oldValue.setCreationTime(newValue.getCreationTime());
+            }
+            if (newValue.getCreatorId() != null && !newValue.getCreatorId().equals(oldValue.getCreatorId())) {
+                oldValue.setCreatorId(newValue.getCreatorId());
+            }
+        }
+
+        Collection<VehicleJourney> addedVehicleJourneys = CollectionUtil.substract(newValue.getVehicleJourneys(),
+                oldValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        List<VehicleJourney> vehicleJourneys = null;
+        for (VehicleJourney item : addedVehicleJourneys) {
+            VehicleJourney vehicleJourney = cache.getVehicleJourneys().get(item.getObjectId());
+            if (vehicleJourney == null) {
+                if (vehicleJourneys == null) {
+                    vehicleJourneys = vehicleJourneyDAO.findByObjectId(UpdaterUtils.getObjectIds(addedVehicleJourneys));
+                    for (VehicleJourney object : vehicleJourneys) {
+                        cache.getVehicleJourneys().put(object.getObjectId(), object);
+                    }
+                }
+                vehicleJourney = cache.getVehicleJourneys().get(item.getObjectId());
+            }
+            if (vehicleJourney == null) {
+                vehicleJourney = ObjectFactory.getVehicleJourney(cache, item.getObjectId());
+            }
+            oldValue.getVehicleJourneys().add(vehicleJourney);
+        }
+
+        Collection<Pair<VehicleJourney, VehicleJourney>> modifiedVehicleJourney = CollectionUtil.intersection(
+                oldValue.getVehicleJourneys(), newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (Pair<VehicleJourney, VehicleJourney> pair : modifiedVehicleJourney) {
+            vehicleJourneyUpdater.update(context, pair.getLeft(), pair.getRight());
+        }
+
+        Collection<VehicleJourney> removedVehicleJourney = CollectionUtil.substract(oldValue.getVehicleJourneys(),
+                newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (VehicleJourney vehicleJourney : removedVehicleJourney) {
+            oldValue.getVehicleJourneys().remove(vehicleJourney);
+        }
+
+    }
+}
