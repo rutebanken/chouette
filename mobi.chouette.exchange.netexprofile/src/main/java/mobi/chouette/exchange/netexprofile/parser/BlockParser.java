@@ -46,7 +46,7 @@ public class BlockParser extends NetexParser implements Parser, Constant {
             if (reference instanceof VehicleJourneyRefStructure) {
                 VehicleJourneyRefStructure vehicleJourneyRefStructure = (VehicleJourneyRefStructure) reference;
                 mobi.chouette.model.VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, vehicleJourneyRefStructure.getRef());
-                chouetteBlock.getVehicleJourneys().add(vehicleJourney);
+                chouetteBlock.addVehicleJourney(vehicleJourney);
             } else {
                 log.debug("Ignoring non-VehicleJourneyRef element with id: " + reference);
             }

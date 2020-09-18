@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import mobi.chouette.model.type.DayTypeEnum;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -25,7 +24,7 @@ import java.util.List;
 @Entity
 @Table(name = "blocks")
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = {"vehicleJourney", "originalDatedServiceJourneys", "derivedDatedServiceJourneys"})
+@ToString(callSuper = true, exclude = {"vehicleJourneys"})
 public class Block extends NeptuneIdentifiedObject {
 
     @Getter
@@ -65,8 +64,22 @@ public class Block extends NeptuneIdentifiedObject {
      * Vehicle Journeys.
      */
     @Getter
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = " blocks_vehicle_journeys", joinColumns = {@JoinColumn(name = "block_id")}, inverseJoinColumns = {@JoinColumn(name = "vehicle_journey_id")})
     private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
+
+    public void addVehicleJourney(VehicleJourney vehicleJourney) {
+        if (vehicleJourney != null) {
+            vehicleJourney.getBlocks().add(this);
+            vehicleJourneys.add(vehicleJourney);
+        }
+    }
+
+    public void removeVehicleJourney(VehicleJourney vehicleJourney) {
+        if (vehicleJourney != null) {
+            vehicleJourney.getBlocks().remove(this);
+            vehicleJourneys.remove(vehicleJourney);
+        }
+    }
 
 }

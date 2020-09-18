@@ -98,6 +98,7 @@ public class DataCollector {
 	private void collectVehicleJourney(VehicleJourney vehicleJourney) {
 		collection.getTimetables().addAll(vehicleJourney.getTimetables());
 		collection.getDatedServiceJourneys().addAll(vehicleJourney.getDatedServiceJourneys());
+		collection.getBlocks().addAll(vehicleJourney.getBlocks());
 		collection.getVehicleJourneys().add(vehicleJourney);
 		collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
 		collection.getFootnotes().addAll(vehicleJourney.getFootnotes());

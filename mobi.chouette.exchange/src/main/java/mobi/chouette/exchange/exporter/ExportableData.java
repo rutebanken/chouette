@@ -89,7 +89,7 @@ public class ExportableData {
 	private List<DatedServiceJourney> datedServiceJourneys = new ArrayList<>();
 	@Getter
 	@Setter
-	private List<Block> blocks = new ArrayList<>();
+	private Set<Block> blocks = new HashSet<>();
 	@Getter
 	@Setter
 	private List<JourneyPattern> journeyPatterns = new ArrayList<>();
