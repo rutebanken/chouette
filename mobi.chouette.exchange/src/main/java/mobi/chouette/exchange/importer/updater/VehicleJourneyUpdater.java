@@ -134,6 +134,9 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	@EJB(beanName = DatedServiceJourneyUpdater.BEAN_NAME)
 	private Updater<DatedServiceJourney> datedServiceJourneyUpdater;
 
+	@EJB(beanName = BlockUpdater.BEAN_NAME)
+	private Updater<Block> blockUpdater;
+
 
 	@Override
 	public void update(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
@@ -440,6 +443,14 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			}
 			block.addVehicleJourney(oldValue);
 		}
+
+		Collection<Pair<Block, Block>> modifiedBlock = CollectionUtil.intersection(
+				oldValue.getBlocks(), newValue.getBlocks(),
+				NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (Pair<Block, Block> pair : modifiedBlock) {
+			blockUpdater.update(context, pair.getLeft(), pair.getRight());
+		}
+
 	}
 
 	private void updateDatedServiceJourneys(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {

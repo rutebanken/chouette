@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -59,6 +60,19 @@ public class Block extends NeptuneIdentifiedObject {
         privateCode = StringUtils.abbreviate(value, 255);
 
     }
+
+    /**
+     * timetables
+     *
+     * @param timetables
+     *            New value
+     * @return The actual value
+     */
+    @Getter
+    @Setter
+    @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @JoinTable(name = "time_tables_blocks", joinColumns = { @JoinColumn(name = "block_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "time_table_id", nullable = false, updatable = false) })
+    private List<Timetable> timetables = new ArrayList<Timetable>(0);
 
     /**
      * Vehicle Journeys.

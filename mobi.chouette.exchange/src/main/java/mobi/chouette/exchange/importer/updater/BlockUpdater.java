@@ -3,8 +3,10 @@ package mobi.chouette.exchange.importer.updater;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
+import mobi.chouette.dao.TimetableDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.Block;
+import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -24,6 +26,9 @@ public class BlockUpdater implements Updater<Block> {
 
     @EJB
     private VehicleJourneyDAO vehicleJourneyDAO;
+
+    @EJB
+    private TimetableDAO timetableDAO;
 
     @Override
     public void update(Context context, Block oldValue, Block newValue) throws Exception {
@@ -59,6 +64,29 @@ public class BlockUpdater implements Updater<Block> {
             }
         }
 
+        // Day Types
+        Collection<Timetable> addedTimetables = CollectionUtil.substract(newValue.getTimetables(),
+                oldValue.getTimetables(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        List<Timetable> timetables = null;
+        for (Timetable item : addedTimetables) {
+            Timetable timetable = cache.getTimetables().get(item.getObjectId());
+            if (timetable == null) {
+                if (timetables == null) {
+                    timetables = timetableDAO.findByObjectId(UpdaterUtils.getObjectIds(addedTimetables));
+                    for (Timetable object : timetables) {
+                        cache.getTimetables().put(object.getObjectId(), object);
+                    }
+                }
+                timetable = cache.getTimetables().get(item.getObjectId());
+            }
+            if (timetable == null) {
+                timetable = ObjectFactory.getTimetable(cache, item.getObjectId());
+            }
+            oldValue.getTimetables().add(timetable);
+        }
+
+
+        // Vehicle Journeys
         Collection<VehicleJourney> addedVehicleJourneys = CollectionUtil.substract(newValue.getVehicleJourneys(),
                 oldValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         List<VehicleJourney> vehicleJourneys = null;
@@ -90,6 +118,8 @@ public class BlockUpdater implements Updater<Block> {
         for (VehicleJourney vehicleJourney : removedVehicleJourney) {
             oldValue.getVehicleJourneys().remove(vehicleJourney);
         }
+
+
 
     }
 }
