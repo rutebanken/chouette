@@ -86,7 +86,7 @@ public class BlockUpdater implements Updater<Block> {
         }
 
 
-        // Vehicle Journeys
+        /*// Vehicle Journeys
         Collection<VehicleJourney> addedVehicleJourneys = CollectionUtil.substract(newValue.getVehicleJourneys(),
                 oldValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         List<VehicleJourney> vehicleJourneys = null;
@@ -117,7 +117,7 @@ public class BlockUpdater implements Updater<Block> {
                 newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         for (VehicleJourney vehicleJourney : removedVehicleJourney) {
             oldValue.getVehicleJourneys().remove(vehicleJourney);
-        }
+        }*/
 
 
 
