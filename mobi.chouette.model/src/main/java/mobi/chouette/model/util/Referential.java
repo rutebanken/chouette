@@ -204,6 +204,10 @@ public class Referential implements java.io.Serializable {
 
 	@Getter
 	@Setter
+	private Map<String, Block> sharedBlocks = new HashMap<>();
+
+	@Getter
+	@Setter
 	private Map<String, Block> blocks = new HashMap<>();
 
 	@Getter
@@ -289,6 +293,7 @@ public class Referential implements java.io.Serializable {
 		footnotes.clear();
 		vehicleJourneyAtStops.clear();
 		brandings.clear();
+		blocks.clear();
 	}
 
 	public void dispose() {
@@ -310,7 +315,7 @@ public class Referential implements java.io.Serializable {
 		sharedBrandings.clear();
 		sharedRoutePoints.clear();
 		sharedRouteSections.clear();
+		sharedBlocks.clear();
 	}
-
 
 }

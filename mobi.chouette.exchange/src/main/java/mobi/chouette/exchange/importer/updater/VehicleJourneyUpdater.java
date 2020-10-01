@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -412,7 +414,8 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		}
 
 		updateDatedServiceJourneys(context, oldValue, newValue, cache);
-		updateBlocks(context, oldValue, newValue, cache);
+		//updateBlocks(context, oldValue, newValue, cache);
+		updateSharedBlocks(context, oldValue, cache);
 
 		updateInterchanges(context, oldValue, newValue);
 		updateFootnotes(context,oldValue,newValue,cache);
@@ -420,7 +423,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 //		monitor.stop();
 	}
 
-	private void updateBlocks(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
+	/*private void updateBlocks(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
 		Collection<Block> addedBlock = CollectionUtil.substract(newValue.getBlocks(),
 				oldValue.getBlocks(), NeptuneIdentifiedObjectComparator.INSTANCE);
 
@@ -451,7 +454,37 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			blockUpdater.update(context, pair.getLeft(), pair.getRight());
 		}
 
+	}*/
+
+	private void updateSharedBlocks(Context context, VehicleJourney oldValue, Referential cache) throws Exception {
+		List<Block> blocks = null;
+		Referential referential = (Referential) context.get(REFERENTIAL);
+		Map<String,Block> sharedBlocks = referential.getSharedBlocks();
+		List<Block> referencingBlocks = sharedBlocks.values().stream().filter(b -> b.containsVehicleJourney(oldValue.getObjectId())).collect(Collectors.toList());
+		for(Block item: referencingBlocks) {
+			System.out.println("Referencing block: " +  item.getObjectId());
+
+			Block block = cache.getBlocks().get(item.getObjectId());
+			if (block == null) {
+				if (blocks == null) {
+					blocks = blockDAO.findByObjectId(UpdaterUtils.getObjectIds(referencingBlocks));
+					for (Block object : blocks) {
+						cache.getBlocks().put(object.getObjectId(), object);
+					}
+				}
+				block = cache.getBlocks().get(item.getObjectId());
+			}
+
+			if (block == null) {
+				block = ObjectFactory.getBlock(cache, item.getObjectId());
+				blockUpdater.update(context, block, item);
+			}
+			block.addVehicleJourney(oldValue);
+
+
+		}
 	}
+
 
 	private void updateDatedServiceJourneys(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
 		Collection<DatedServiceJourney> addedDatedServiceJourney = CollectionUtil.substract(newValue.getDatedServiceJourneys(),

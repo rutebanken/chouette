@@ -376,15 +376,19 @@ public class ObjectFactory {
 		return interchange;
 	}
 
-    public static Block getBlock(Referential referential, String objectId) {
-
-		Block result = referential.getBlocks().get(objectId);
+	public static Block getBlock(Referential referential,
+										   String objectId) {
+		Block result = referential.getSharedBlocks().get(objectId);
 		if (result == null) {
 			result = new Block();
 			result.setObjectId(objectId);
 			result.setDetached(true);
+			referential.getSharedBlocks().put(objectId, result);
+		}
+		if (!referential.getBlocks().containsKey(objectId)) {
 			referential.getBlocks().put(objectId, result);
 		}
 		return result;
-    }
+	}
+
 }
