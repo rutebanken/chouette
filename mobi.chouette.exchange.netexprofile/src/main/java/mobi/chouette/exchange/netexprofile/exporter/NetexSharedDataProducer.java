@@ -9,11 +9,16 @@ import javax.xml.bind.Marshaller;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.exporter.producer.BlockProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.Block;
 
 public class NetexSharedDataProducer extends NetexProducer implements Constant {
+
+    private static BlockProducer blockProducer = new BlockProducer();
+
 
     public void produce(Context context) throws Exception {
         ActionReporter reporter = ActionReporter.Factory.getInstance();
@@ -21,6 +26,8 @@ public class NetexSharedDataProducer extends NetexProducer implements Constant {
         Path outputPath = Paths.get(jobData.getPathName(), OUTPUT);
         ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(EXPORTABLE_NETEX_DATA);
+
+        produceBlocks(context, exportableData, exportableNetexData);
 
         String filename = ExportedFilenamer.createSharedDataFilename(context);
         reporter.addFileReport(context, filename, IO_TYPE.OUTPUT);
@@ -30,6 +37,13 @@ public class NetexSharedDataProducer extends NetexProducer implements Constant {
         NetexFileWriter writer = new NetexFileWriter();
         writer.writeXmlFile(context, filePath, exportableData, exportableNetexData, NetexFragmentMode.SHARED,marshaller);
 
+    }
+
+    private void produceBlocks(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
+        for (Block block : exportableData.getBlocks()) {
+            org.rutebanken.netex.model.Block netexBlock = blockProducer.produce(context, block, exportableData.getLine());
+            exportableNetexData.getBlocks().add(netexBlock);
+        }
     }
 
 }

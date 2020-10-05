@@ -21,13 +21,16 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.BlockDAO;
 import mobi.chouette.dao.InterchangeDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.RouteSectionDAO;
+import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.ProgressionCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.netexprofile.importer.UpdateReferentialLastUpdateTimestampCommand;
 import mobi.chouette.exchange.transfer.Constant;
+import mobi.chouette.model.Block;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
@@ -39,6 +42,7 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.Referential;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.rutebanken.netex.model.Vehicle;
 
 @Log4j
 @Stateless(name = TransferExportDataWriter.COMMAND)
@@ -50,6 +54,12 @@ public class TransferExportDataWriter implements Command, Constant {
 
 	@EJB
 	private LineDAO lineDAO;
+
+	@EJB
+	private BlockDAO blockDAO;
+
+	@EJB
+	private VehicleJourneyDAO vehicleJourneyDAO;
 
 	@EJB
 	private RouteSectionDAO routeSectionDAO;
@@ -67,6 +77,7 @@ public class TransferExportDataWriter implements Command, Constant {
 			throw new RuntimeException("No transaction");
 		}
 
+		List<Block> blocksToTransfer = (List<Block>) context.get(BLOCKS);
 		List<Line> lineToTransfer = (List<Line>) context.get(LINES);
 		ProgressionCommand progression = (ProgressionCommand) context.get(PROGRESSION);
 
@@ -80,13 +91,14 @@ public class TransferExportDataWriter implements Command, Constant {
 		}
 		
 		// Persist
-		log.info("Starting to persist lines, count=" + lineToTransfer.size());
 
 		List<Interchange> interchanges=new ArrayList<>();
 		Set<String> vehicleJourneyIds=new HashSet<>();
 
 		Referential referential = new Referential();
 		try {
+			log.info("Starting to persist lines, count=" + lineToTransfer.size());
+
 			for (Line l : lineToTransfer) {
 				for (Route r : l.getRoutes()) {
 					for(JourneyPattern jp : r.getJourneyPatterns()) {
@@ -138,6 +150,17 @@ public class TransferExportDataWriter implements Command, Constant {
 					log.info("Intermediary flush completed");
 				}
 			}
+
+
+			log.info("Starting to persist blocks");
+			for(Block block: blocksToTransfer) {
+				System.out.println("persist block " + block.getObjectId());
+				List<VehicleJourney> persistentVehicleJourneys = block.getVehicleJourneys().stream().map(vj -> vehicleJourneyDAO.findByObjectId(vj.getObjectId())).collect(Collectors.toList());
+				block.setVehicleJourneys(persistentVehicleJourneys);
+				blockDAO.create(block);
+			}
+
+
 
 			log.info("Updating target referential last update timestamp");
 			Command updateReferentialLastUpdateTimestampCommand = CommandFactory.create(initialContext, UpdateReferentialLastUpdateTimestampCommand.class.getName());

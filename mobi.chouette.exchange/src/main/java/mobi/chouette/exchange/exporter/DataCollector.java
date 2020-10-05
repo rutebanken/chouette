@@ -3,6 +3,7 @@ package mobi.chouette.exchange.exporter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.Block;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.JourneyPattern;
@@ -98,6 +99,8 @@ public class DataCollector {
 	private void collectVehicleJourney(VehicleJourney vehicleJourney) {
 		collection.getTimetables().addAll(vehicleJourney.getTimetables());
 		collection.getDatedServiceJourneys().addAll(vehicleJourney.getDatedServiceJourneys());
+		//TODO fetch vj
+		vehicleJourney.getBlocks().forEach(b -> b.getVehicleJourneys().size());
 		collection.getBlocks().addAll(vehicleJourney.getBlocks());
 		collection.getVehicleJourneys().add(vehicleJourney);
 		collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);

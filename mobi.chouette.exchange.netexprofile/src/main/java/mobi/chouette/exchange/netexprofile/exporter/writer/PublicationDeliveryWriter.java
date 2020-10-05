@@ -161,7 +161,7 @@ public class PublicationDeliveryWriter extends AbstractNetexWriter{
 
 			if (fragmentMode.equals(NetexFragmentMode.LINE)) {
 				ServiceFrameWriter.write(writer, context, exportableNetexData, NetexFragmentMode.LINE, marshaller);
-				VehicleScheduleFrameWriter.write(writer, context, exportableNetexData, NetexFragmentMode.LINE, marshaller);
+				//VehicleScheduleFrameWriter.write(writer, context, exportableNetexData, NetexFragmentMode.LINE, marshaller);
 				TimetableFrameWriter.write(writer, context, exportableNetexData, marshaller);
 			} else { // shared data
 				ResourceFrameWriter.write(writer, context, exportableNetexData, marshaller);

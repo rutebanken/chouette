@@ -336,7 +336,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	 */
 
 	@Getter
-	@ManyToMany(mappedBy = "vehicleJourneys", cascade = { CascadeType.PERSIST })
+	@ManyToMany(mappedBy = "vehicleJourneys")
 	private List<Block> blocks = new ArrayList<>();
 
 	/**

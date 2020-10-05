@@ -86,7 +86,7 @@ public class BlockUpdater implements Updater<Block> {
         }
 
 
-        /*// Vehicle Journeys
+        // Vehicle Journeys
         Collection<VehicleJourney> addedVehicleJourneys = CollectionUtil.substract(newValue.getVehicleJourneys(),
                 oldValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         List<VehicleJourney> vehicleJourneys = null;
@@ -107,17 +107,17 @@ public class BlockUpdater implements Updater<Block> {
             oldValue.getVehicleJourneys().add(vehicleJourney);
         }
 
-        Collection<Pair<VehicleJourney, VehicleJourney>> modifiedVehicleJourney = CollectionUtil.intersection(
+/*        Collection<Pair<VehicleJourney, VehicleJourney>> modifiedVehicleJourney = CollectionUtil.intersection(
                 oldValue.getVehicleJourneys(), newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<VehicleJourney, VehicleJourney> pair : modifiedVehicleJourney) {
             vehicleJourneyUpdater.update(context, pair.getLeft(), pair.getRight());
-        }
+        }*/
 
         Collection<VehicleJourney> removedVehicleJourney = CollectionUtil.substract(oldValue.getVehicleJourneys(),
                 newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         for (VehicleJourney vehicleJourney : removedVehicleJourney) {
             oldValue.getVehicleJourneys().remove(vehicleJourney);
-        }*/
+        }
 
 
 

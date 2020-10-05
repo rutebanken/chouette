@@ -77,7 +77,6 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 	private static CalendarProducer calendarProducer = new CalendarProducer();
 	private static ServiceJourneyProducer serviceJourneyProducer = new ServiceJourneyProducer();
 	private static DatedServiceJourneyProducer datedServiceJourneyProducer = new DatedServiceJourneyProducer();
-	private static BlockProducer blockProducer = new BlockProducer();
 	private static ServiceJourneyInterchangeProducer serviceJourneyInterchangeProducer = new ServiceJourneyInterchangeProducer();
 	private static BrandingProducer brandingProducer = new BrandingProducer();
 
@@ -147,11 +146,6 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 		for (DatedServiceJourney datedServiceJourney : exportableData.getDatedServiceJourneys()) {
 			 org.rutebanken.netex.model.DatedServiceJourney netexDatedServiceJourney = datedServiceJourneyProducer.produce(context, datedServiceJourney, exportableData.getLine());
 			exportableNetexData.getDatedServiceJourneys().add(netexDatedServiceJourney);
-		}
-
-		for (Block block : exportableData.getBlocks()) {
-			org.rutebanken.netex.model.Block netexBlock = blockProducer.produce(context, block, exportableData.getLine());
-			exportableNetexData.getBlocks().add(netexBlock);
 		}
 
 		for (Interchange interchange : exportableData.getInterchanges()) {

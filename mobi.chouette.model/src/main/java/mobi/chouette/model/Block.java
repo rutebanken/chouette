@@ -22,6 +22,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,7 +83,8 @@ public class Block extends NeptuneIdentifiedObject {
      * Vehicle Journeys.
      */
     @Getter
-    @ManyToMany(fetch = FetchType.LAZY)
+    @Setter
+    @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @OrderColumn(name = "position")
     @JoinTable(name = " blocks_vehicle_journeys", joinColumns = {@JoinColumn(name = "block_id")}, inverseJoinColumns = {@JoinColumn(name = "vehicle_journey_id")})
     private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
@@ -118,5 +120,10 @@ public class Block extends NeptuneIdentifiedObject {
 
     public boolean containsVehicleJourney(String objectId) {
         return vehicleJourneys.stream().anyMatch(vj -> vj.getObjectId().equals(objectId))  ;
+    }
+
+    public boolean filter(Date startDate, Date endDate) {
+        getVehicleJourneys();
+        return true;
     }
 }

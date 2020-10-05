@@ -7,6 +7,7 @@ import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.model.Block;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.VehicleJourney;
+import org.rutebanken.netex.model.JourneyRefs_RelStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 import org.rutebanken.netex.model.VehicleJourneyRefStructure;
 
@@ -27,10 +28,12 @@ public class BlockProducer extends NetexProducer {
         netexBlock.setPrivateCode(privateCodeStructure);
 
         // vehicle journeys
+        JourneyRefs_RelStructure journeyRefs_relStructure = netexFactory.createJourneyRefs_RelStructure();
+        netexBlock.setJourneys(journeyRefs_relStructure);
         for (VehicleJourney vehicleJourney : block.getVehicleJourneys()) {
             VehicleJourneyRefStructure vehicleJourneyRefStructure = netexFactory.createVehicleJourneyRefStructure();
             vehicleJourneyRefStructure.setRef(vehicleJourney.getObjectId());
-            NetexProducerUtils.populateReference(vehicleJourney, vehicleJourneyRefStructure, true);
+            NetexProducerUtils.populateReference(vehicleJourney, vehicleJourneyRefStructure, false);
             JAXBElement<?> vehicleJourneyRef = netexFactory.createVehicleJourneyRef(vehicleJourneyRefStructure);
             netexBlock.getJourneys().getJourneyRefOrJourneyDesignatorOrServiceDesignator().add(vehicleJourneyRef);
         }

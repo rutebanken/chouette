@@ -415,7 +415,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
 		updateDatedServiceJourneys(context, oldValue, newValue, cache);
 		//updateBlocks(context, oldValue, newValue, cache);
-		updateSharedBlocks(context, oldValue, cache);
+		//updateSharedBlocks(context, oldValue, cache);
 
 		updateInterchanges(context, oldValue, newValue);
 		updateFootnotes(context,oldValue,newValue,cache);
