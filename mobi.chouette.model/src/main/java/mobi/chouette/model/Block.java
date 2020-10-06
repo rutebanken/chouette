@@ -123,7 +123,6 @@ public class Block extends NeptuneIdentifiedObject {
     }
 
     public boolean filter(Date startDate, Date endDate) {
-        getVehicleJourneys();
-        return true;
+        return hasActiveTimetablesOnPeriod(new LocalDate(startDate), new LocalDate(endDate));
     }
 }

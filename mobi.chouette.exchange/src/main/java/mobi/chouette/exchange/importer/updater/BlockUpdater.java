@@ -21,8 +21,8 @@ public class BlockUpdater implements Updater<Block> {
 
     public static final String BEAN_NAME = "BlockUpdater";
 
-    @EJB(beanName = VehicleJourneyUpdater.BEAN_NAME)
-    private Updater<VehicleJourney> vehicleJourneyUpdater;
+    @EJB(beanName = TimetableUpdater.BEAN_NAME)
+    private Updater<Timetable> timetableUpdater;
 
     @EJB
     private VehicleJourneyDAO vehicleJourneyDAO;
@@ -84,7 +84,11 @@ public class BlockUpdater implements Updater<Block> {
             }
             oldValue.getTimetables().add(timetable);
         }
-
+        Collection<Pair<Timetable, Timetable>> modifiedTimetable = CollectionUtil.intersection(
+                oldValue.getTimetables(), newValue.getTimetables(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (Pair<Timetable, Timetable> pair : modifiedTimetable) {
+            timetableUpdater.update(context, pair.getLeft(), pair.getRight());
+        }
 
         // Vehicle Journeys
         Collection<VehicleJourney> addedVehicleJourneys = CollectionUtil.substract(newValue.getVehicleJourneys(),
