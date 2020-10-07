@@ -65,8 +65,7 @@ public class TransferExportDataLoader implements Command, Constant {
 		return true;
 	}
 
-	protected List<Block> prepareBlocks(Context context) throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	protected List<Block> prepareBlocks(Context context) {
 		if (!em.isJoinedToTransaction()) {
 			throw new RuntimeException("No transaction");
 		}
@@ -75,7 +74,7 @@ public class TransferExportDataLoader implements Command, Constant {
 
 		log.info("Loading all shared blocks...");
 		List<Block> allBlocks = blockDAO.findAll();
-		log.info("Filtering lines");
+		log.info("Filtering blocks");
 		List<Block> blocksToTransfer = allBlocks
 				.stream()
 				.filter(block -> block.filter(configuration.getStartDate(), configuration.getEndDate()))

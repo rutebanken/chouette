@@ -100,8 +100,6 @@ public class DataCollector {
 	private void collectVehicleJourney(VehicleJourney vehicleJourney) {
 		collection.getTimetables().addAll(vehicleJourney.getTimetables());
 		collection.getDatedServiceJourneys().addAll(vehicleJourney.getDatedServiceJourneys());
-		//TODO fetch vj and timetables
-		vehicleJourney.getBlocks().forEach(b -> { b.getVehicleJourneys().size(); b.getTimetables().size();});
 		collection.getBlocks().addAll(vehicleJourney.getBlocks());
 		collection.getTimetables().addAll(vehicleJourney.getBlocks().stream().map(Block::getTimetables).flatMap(List::stream).collect(Collectors.toList()));
 		collection.getVehicleJourneys().add(vehicleJourney);

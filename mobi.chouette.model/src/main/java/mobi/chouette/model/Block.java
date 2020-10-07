@@ -84,9 +84,9 @@ public class Block extends NeptuneIdentifiedObject {
      */
     @Getter
     @Setter
-    @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
     @OrderColumn(name = "position")
-    @JoinTable(name = " blocks_vehicle_journeys", joinColumns = {@JoinColumn(name = "block_id")}, inverseJoinColumns = {@JoinColumn(name = "vehicle_journey_id")})
+    @JoinTable(name = "blocks_vehicle_journeys", joinColumns = {@JoinColumn(name = "block_id")}, inverseJoinColumns = {@JoinColumn(name = "vehicle_journey_id")})
     private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
 
     public void addVehicleJourney(VehicleJourney vehicleJourney) {
@@ -103,23 +103,8 @@ public class Block extends NeptuneIdentifiedObject {
         }
     }
 
-    /**
-     * Retrieve the list of active timetables on the period, taking into account the day offset at first stop and last stop.
-     *
-     * @param startDate the start date of the period (inclusive).
-     * @param endDate   the end date of the period (inclusive).
-     * @return the list of timetables active on the period, taking into account the day offset at first stop and last stop.
-     */
-    public List<Timetable> getActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
-        return getTimetables().stream().filter(t -> t.isActiveOnPeriod(startDate, endDate)).collect(Collectors.toList());
-    }
-
     public boolean hasActiveTimetablesOnPeriod(LocalDate startDate, LocalDate endDate) {
-        return !getActiveTimetablesOnPeriod(startDate, endDate).isEmpty();
-    }
-
-    public boolean containsVehicleJourney(String objectId) {
-        return vehicleJourneys.stream().anyMatch(vj -> vj.getObjectId().equals(objectId))  ;
+        return getTimetables().stream().anyMatch(t -> t.isActiveOnPeriod(startDate, endDate));
     }
 
     public boolean filter(Date startDate, Date endDate) {

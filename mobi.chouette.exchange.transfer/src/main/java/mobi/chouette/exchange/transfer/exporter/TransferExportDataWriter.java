@@ -154,13 +154,10 @@ public class TransferExportDataWriter implements Command, Constant {
 
 			log.info("Starting to persist blocks");
 			for(Block block: blocksToTransfer) {
-				System.out.println("persist block " + block.getObjectId());
 				List<VehicleJourney> persistentVehicleJourneys = block.getVehicleJourneys().stream().map(vj -> vehicleJourneyDAO.findByObjectId(vj.getObjectId())).collect(Collectors.toList());
 				block.setVehicleJourneys(persistentVehicleJourneys);
 				blockDAO.create(block);
 			}
-
-
 
 			log.info("Updating target referential last update timestamp");
 			Command updateReferentialLastUpdateTimestampCommand = CommandFactory.create(initialContext, UpdateReferentialLastUpdateTimestampCommand.class.getName());

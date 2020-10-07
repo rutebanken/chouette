@@ -17,7 +17,6 @@ import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.NeptuneObjectPresenter;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
-import mobi.chouette.exchange.netexprofile.exporter.producer.BlockProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.BrandingProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.CalendarProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.DatedServiceJourneyProducer;
@@ -33,7 +32,6 @@ import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyProdu
 import mobi.chouette.exchange.netexprofile.exporter.producer.StopPlaceProducer;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.Block;
 import mobi.chouette.model.Branding;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.DatedServiceJourney;

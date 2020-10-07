@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import mobi.chouette.dao.BlockDAO;
 import mobi.chouette.dao.DatedServiceJourneyDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.model.Block;
 import mobi.chouette.model.DatedServiceJourney;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -109,8 +104,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	@EJB
 	private DatedServiceJourneyDAO datedServiceJourneyDAO;
 
-	@EJB
-	private BlockDAO blockDAO;
 
 	@EJB
 	private InterchangeDAO interchangeDAO;
@@ -135,9 +128,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
 	@EJB(beanName = DatedServiceJourneyUpdater.BEAN_NAME)
 	private Updater<DatedServiceJourney> datedServiceJourneyUpdater;
-
-	@EJB(beanName = BlockUpdater.BEAN_NAME)
-	private Updater<Block> blockUpdater;
 
 
 	@Override
@@ -414,77 +404,12 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		}
 
 		updateDatedServiceJourneys(context, oldValue, newValue, cache);
-		//updateBlocks(context, oldValue, newValue, cache);
-		//updateSharedBlocks(context, oldValue, cache);
 
 		updateInterchanges(context, oldValue, newValue);
 		updateFootnotes(context,oldValue,newValue,cache);
 		updateInterchanges(context, oldValue, newValue);
 //		monitor.stop();
 	}
-
-	/*private void updateBlocks(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
-		Collection<Block> addedBlock = CollectionUtil.substract(newValue.getBlocks(),
-				oldValue.getBlocks(), NeptuneIdentifiedObjectComparator.INSTANCE);
-
-		List<Block> blocks = null;
-		for (Block item : addedBlock) {
-
-			Block block = cache.getBlocks().get(item.getObjectId());
-			if (block == null) {
-				if (blocks == null) {
-					blocks = blockDAO.findByObjectId(UpdaterUtils.getObjectIds(addedBlock));
-					for (Block object : blocks) {
-						cache.getBlocks().put(object.getObjectId(), object);
-					}
-				}
-				block = cache.getBlocks().get(item.getObjectId());
-			}
-
-			if (block == null) {
-				block = ObjectFactory.getBlock(cache, item.getObjectId());
-			}
-			block.addVehicleJourney(oldValue);
-		}
-
-		Collection<Pair<Block, Block>> modifiedBlock = CollectionUtil.intersection(
-				oldValue.getBlocks(), newValue.getBlocks(),
-				NeptuneIdentifiedObjectComparator.INSTANCE);
-		for (Pair<Block, Block> pair : modifiedBlock) {
-			blockUpdater.update(context, pair.getLeft(), pair.getRight());
-		}
-
-	}*/
-
-	private void updateSharedBlocks(Context context, VehicleJourney oldValue, Referential cache) throws Exception {
-		List<Block> blocks = null;
-		Referential referential = (Referential) context.get(REFERENTIAL);
-		Map<String,Block> sharedBlocks = referential.getSharedBlocks();
-		List<Block> referencingBlocks = sharedBlocks.values().stream().filter(b -> b.containsVehicleJourney(oldValue.getObjectId())).collect(Collectors.toList());
-		for(Block item: referencingBlocks) {
-			System.out.println("Referencing block: " +  item.getObjectId());
-
-			Block block = cache.getBlocks().get(item.getObjectId());
-			if (block == null) {
-				if (blocks == null) {
-					blocks = blockDAO.findByObjectId(UpdaterUtils.getObjectIds(referencingBlocks));
-					for (Block object : blocks) {
-						cache.getBlocks().put(object.getObjectId(), object);
-					}
-				}
-				block = cache.getBlocks().get(item.getObjectId());
-			}
-
-			if (block == null) {
-				block = ObjectFactory.getBlock(cache, item.getObjectId());
-				blockUpdater.update(context, block, item);
-			}
-			block.addVehicleJourney(oldValue);
-
-
-		}
-	}
-
 
 	private void updateDatedServiceJourneys(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
 		Collection<DatedServiceJourney> addedDatedServiceJourney = CollectionUtil.substract(newValue.getDatedServiceJourneys(),

@@ -136,8 +136,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		// updateBoardingAlighting(referential);
 	}
 
-
-
 	private void preParseReferentialDependencies(Context context, Referential referential, List<ServiceFrame> serviceFrames,
 			List<TimetableFrame> timetableFrames, boolean isCommonDelivery) throws Exception {
 

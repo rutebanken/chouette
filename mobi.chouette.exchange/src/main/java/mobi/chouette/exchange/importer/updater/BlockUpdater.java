@@ -111,12 +111,6 @@ public class BlockUpdater implements Updater<Block> {
             oldValue.getVehicleJourneys().add(vehicleJourney);
         }
 
-/*        Collection<Pair<VehicleJourney, VehicleJourney>> modifiedVehicleJourney = CollectionUtil.intersection(
-                oldValue.getVehicleJourneys(), newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
-        for (Pair<VehicleJourney, VehicleJourney> pair : modifiedVehicleJourney) {
-            vehicleJourneyUpdater.update(context, pair.getLeft(), pair.getRight());
-        }*/
-
         Collection<VehicleJourney> removedVehicleJourney = CollectionUtil.substract(oldValue.getVehicleJourneys(),
                 newValue.getVehicleJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
         for (VehicleJourney vehicleJourney : removedVehicleJourney) {
