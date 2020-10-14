@@ -3,6 +3,7 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.NetexFragmentMode;
+import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -19,7 +20,9 @@ public class VehicleScheduleFrameWriter extends AbstractNetexWriter {
     public static void write(XMLStreamWriter writer, Context context, ExportableNetexData exportableNetexData, NetexFragmentMode fragmentMode,
                              Marshaller marshaller) {
 
-        if (CollectionUtils.isNotEmpty(exportableNetexData.getBlocks())) {
+        NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
+
+        if (configuration.isExportBlocks() && CollectionUtils.isNotEmpty(exportableNetexData.getBlocks())) {
             String vehicleScheduleFrameId = NetexProducerUtils.createUniqueId(context, VEHICLE_SCHEDULE_FRAME);
             try {
                 writer.writeStartElement(VEHICLE_SCHEDULE_FRAME);
