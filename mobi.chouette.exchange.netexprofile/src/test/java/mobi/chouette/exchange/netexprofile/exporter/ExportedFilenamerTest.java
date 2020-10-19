@@ -32,11 +32,11 @@ public class ExportedFilenamerTest {
         context.put(Constant.CONFIGURATION, params);
 
         Line line = new Line();
-        line.setName("ÆØÅæøå:/ \\");
+        line.setName("ÆØÅæøå:/ \\<>\"'?*;|");
         line.setObjectId("TST:Line:1");
         String lineFilename = ExportedFilenamer.createLineFilename(context, line);
 
-        Assert.assertEquals(lineFilename, "TST_TST-Line-1_EOAeoa----.xml");
+        Assert.assertEquals(lineFilename, "TST_TST-Line-1_EOAeoa------------.xml");
 
     }
 

@@ -13,9 +13,9 @@ public class ExportedFilenamer {
 	private static final String DASH = "-";
 
 	/**
-	 * Match occurrences of / OR . OR \ OR : OR space.
+	 * Match occurrences of /  .  \  :  <  >  " ' | ? * ; and the space character.
 	 */
-	private static final Pattern PATTERN_INVALID_CHARACTERS_IN_FILE_NAME = Pattern.compile("[/.\\\\: ]");
+	private static final Pattern PATTERN_INVALID_CHARACTERS_IN_FILE_NAME = Pattern.compile("[/.\\\\:<>\"'|?*; ]");
 
 	/**
 	 * Match occurrences of non-ASCII characters.
