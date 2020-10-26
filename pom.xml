@@ -65,6 +65,18 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+
+		<!--Adding explicitly Maven Central so that Shrinkwrap can download artifacts
+		  (in the version of Shrinkwrap used by Chouette, the URL for Maven Central is hardcoded to http://. not https://)
+		  -->
+		<repository>
+			<id>maven-central-https</id>
+			<name>Maven Central HTTPS</name>
+			<url>https://repo1.maven.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<build>
 		<extensions>
