@@ -998,27 +998,28 @@
 		<module>chouette_iev</module>
 	</modules>
 
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 
-	<profile>
-		<id>sonar</id>
-		<activation>
-			<activeByDefault>false</activeByDefault>
-		</activation>
+			<properties>
+				<jdk.version>11</jdk.version>
+				<sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
+			</properties>
 
-		<properties>
-			<jdk.version>11</jdk.version>
-			<sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
-		</properties>
+			<build>
+				<plugins>
 
-		<build>
-			<plugins>
-
-				<plugin>
-					<groupId>org.sonarsource.scanner.maven</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>${sonar-maven-plugin.version}</version>
-				</plugin>
-			</plugins>
-		</build>
-	</profile>
+					<plugin>
+						<groupId>org.sonarsource.scanner.maven</groupId>
+						<artifactId>sonar-maven-plugin</artifactId>
+						<version>${sonar-maven-plugin.version}</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
