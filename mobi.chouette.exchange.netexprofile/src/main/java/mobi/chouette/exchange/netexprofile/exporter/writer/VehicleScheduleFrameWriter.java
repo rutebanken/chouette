@@ -20,9 +20,7 @@ public class VehicleScheduleFrameWriter extends AbstractNetexWriter {
     public static void write(XMLStreamWriter writer, Context context, ExportableNetexData exportableNetexData, NetexFragmentMode fragmentMode,
                              Marshaller marshaller) {
 
-        NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
-
-        if (configuration.isExportBlocks() && CollectionUtils.isNotEmpty(exportableNetexData.getBlocks())) {
+        if (CollectionUtils.isNotEmpty(exportableNetexData.getBlocks())) {
             String vehicleScheduleFrameId = NetexProducerUtils.createUniqueId(context, VEHICLE_SCHEDULE_FRAME);
             try {
                 writer.writeStartElement(VEHICLE_SCHEDULE_FRAME);
