@@ -36,13 +36,18 @@ public class BlockProducer extends NetexProducer {
             Block_VersionStructure.DayTypes daytypes = new Block_VersionStructure.DayTypes();
             netexBlock.setDayTypes(daytypes);
             for (Timetable t : block.getTimetables()) {
-                if (exportableData.getTimetables().contains(t)) {
+                if (exportableData.getTimetables().contains(t) || exportableNetexData.getSharedDayTypes().containsKey(t.getObjectId())) {
                     DayTypeRefStructure dayTypeRefStruct = netexFactory.createDayTypeRefStructure();
                     NetexProducerUtils.populateReference(t, dayTypeRefStruct, true);
                     JAXBElement<? extends DayTypeRefStructure> dayTypeRef = netexFactory.createDayTypeRef(dayTypeRefStruct);
                     netexBlock.getDayTypes().withDayTypeRef(dayTypeRef);
                 }
             }
+            if( netexBlock.getDayTypes().getDayTypeRef().isEmpty()) {
+                throw new IllegalStateException("No exportable timetable data for block " + block.getObjectId());
+            }
+        } else {
+            throw new IllegalStateException("Missing timetable data for block " + block.getObjectId());
         }
 
         // vehicle journeys
