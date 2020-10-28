@@ -1,5 +1,5 @@
 #Enviroment variables
-variable "gcp_project" {
+variable "gcp_gcs_project" {
     description = "The GCP project id"
 }
 
@@ -29,15 +29,23 @@ variable "labels" {
      }
 }
 
-variable "force_destroy" {
-  description = "(Optional, Default: false) When deleting a bucket, this boolean option will delete all contained objects. If you try to delete a bucket that contains objects, Terraform will fail that run"
-  default     = false
+variable "bucket_instance_suffix" {
+  description = "A suffix for the bucket instance, may be changed if environment is destroyed and then needed again (name collision workaround) - also bucket names must be globally unique"
 }
 
-variable "prevent_destroy" {
-  description = "Prevent destruction of bucket"
-  type        = bool
-  default     = false
+variable "bucket_instance_prefix" {
+  description = "A prefix for the bucket instance, may be changed if environment is destroyed and then needed again (name collision workaround) - also bucket names must be globally unique"
+  default     = "ror-chouette"
+}
+
+variable "bucket_storage_class" {
+  description = "GCP storage class"
+  default     = "REGIONAL"
+}
+
+variable "bucket_retention_period" {
+  description = "Retention period for GCS objects, in days"
+  default     = "105"
 }
 
 variable "load_config_file" {
@@ -53,10 +61,6 @@ variable "service_account_cloudsql_role" {
 variable "service_account_bucket_role" {
   description = "Role of the Service Account - more about roles https://cloud.google.com/storage/docs/access-control/iam-roles"
   default     = "roles/storage.objectViewer"
-}
-
-variable "bucket_chouette_instance_name" {
-  description = "Main storage bucket name"
 }
 
 variable "ror-chouette-db-username" {
