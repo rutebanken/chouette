@@ -27,7 +27,6 @@ import static mobi.chouette.service.GoogleCloudFileStore.BEAN_NAME;
 @Singleton(name = GoogleCloudFileStore.BEAN_NAME)
 @Named
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
-@Startup
 @DependsOn(JobServiceManager.BEAN_NAME)
 @Log4j
 public class GoogleCloudFileStore implements FileStore {
