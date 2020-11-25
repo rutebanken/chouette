@@ -18,13 +18,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Entity
@@ -45,13 +43,8 @@ public class Block extends NeptuneIdentifiedObject {
 
     /**
      * Identification of block, not intended for the public.
-     *
-     * @param privateCode
-     * New value
-     * @return The actual value
      */
     @Getter
-    @Setter
     @Column(name = "private_code")
     private String privateCode;
 
@@ -68,23 +61,19 @@ public class Block extends NeptuneIdentifiedObject {
 
     /**
      * timetables
-     *
-     * @param timetables
-     *            New value
-     * @return The actual value
      */
     @Getter
     @Setter
-    @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
-    @JoinTable(name = "time_tables_blocks", joinColumns = { @JoinColumn(name = "block_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "time_table_id", nullable = false, updatable = false) })
-    private List<Timetable> timetables = new ArrayList<Timetable>(0);
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(name = "time_tables_blocks", joinColumns = {@JoinColumn(name = "block_id", nullable = false, updatable = false)}, inverseJoinColumns = {@JoinColumn(name = "time_table_id", nullable = false, updatable = false)})
+    private List<Timetable> timetables = new ArrayList<>(0);
 
     /**
      * Vehicle Journeys.
      */
     @Getter
     @Setter
-    @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @OrderColumn(name = "position")
     @JoinTable(name = "blocks_vehicle_journeys", joinColumns = {@JoinColumn(name = "block_id")}, inverseJoinColumns = {@JoinColumn(name = "vehicle_journey_id")})
     private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
@@ -93,13 +82,6 @@ public class Block extends NeptuneIdentifiedObject {
         if (vehicleJourney != null) {
             vehicleJourney.getBlocks().add(this);
             vehicleJourneys.add(vehicleJourney);
-        }
-    }
-
-    public void removeVehicleJourney(VehicleJourney vehicleJourney) {
-        if (vehicleJourney != null) {
-            vehicleJourney.getBlocks().remove(this);
-            vehicleJourneys.remove(vehicleJourney);
         }
     }
 

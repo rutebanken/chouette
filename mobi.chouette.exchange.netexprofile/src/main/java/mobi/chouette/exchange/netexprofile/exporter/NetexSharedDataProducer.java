@@ -38,13 +38,13 @@ public class NetexSharedDataProducer extends NetexProducer implements Constant {
 
     }
 
-    private void produceBlocks(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
+    private static void produceBlocks(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
 
         NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
         if (configuration.isExportBlocks()) {
             for (Block block : exportableData.getBlocks()) {
-                org.rutebanken.netex.model.Block netexBlock = blockProducer.produce(context, block, exportableData.getLine());
+                org.rutebanken.netex.model.Block netexBlock = blockProducer.produce(context, block);
                 exportableNetexData.getBlocks().add(netexBlock);
             }
         }

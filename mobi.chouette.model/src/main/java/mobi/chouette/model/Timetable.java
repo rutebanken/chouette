@@ -242,7 +242,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 	@Getter
 	@Setter
 	@ManyToMany(mappedBy = "timetables", fetch = FetchType.LAZY)
-	private List<Block> blocks = new ArrayList<Block>(0);
+	private List<Block> blocks = new ArrayList<>(0);
 
 	/**
 	 * add a day if not already present

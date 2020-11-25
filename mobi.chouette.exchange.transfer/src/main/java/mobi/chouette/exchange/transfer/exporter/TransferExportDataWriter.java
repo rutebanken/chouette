@@ -42,7 +42,6 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.Referential;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.rutebanken.netex.model.Vehicle;
 
 @Log4j
 @Stateless(name = TransferExportDataWriter.COMMAND)

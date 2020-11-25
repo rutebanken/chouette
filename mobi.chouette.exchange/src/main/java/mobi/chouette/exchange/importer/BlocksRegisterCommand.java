@@ -10,6 +10,7 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.BlockDAO;
 import mobi.chouette.exchange.importer.updater.BlockUpdater;
 import mobi.chouette.exchange.importer.updater.Updater;
+import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.model.Block;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -21,6 +22,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import static mobi.chouette.exchange.importer.BlocksRegisterCommand.COMMAND;
 
@@ -46,7 +48,6 @@ public class BlocksRegisterCommand implements Command {
         if (!context.containsKey(OPTIMIZED)) {
             context.put(OPTIMIZED, Boolean.TRUE);
         }
-        Boolean optimized = (Boolean) context.get(OPTIMIZED);
         Referential cache = new Referential();
         context.put(CACHE, cache);
 
@@ -61,11 +62,28 @@ public class BlocksRegisterCommand implements Command {
                 blockDAO.create(oldValue);
             }
 
-            blockDAO.flush(); // to prevent SQL error outside method
+            // to prevent SQL error outside method
+            blockDAO.flush();
 
             result = SUCCESS;
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error("unable to save blocks " + ex.getMessage(), ex);
+            ActionReporter reporter = ActionReporter.Factory.getInstance();
+            if (ex.getCause() != null) {
+                Throwable e = ex.getCause();
+                while (e.getCause() != null) {
+                    log.error(e.getMessage());
+                    e = e.getCause();
+                }
+                if (e instanceof SQLException) {
+                    e = ((SQLException) e).getNextException();
+                    reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, e.getMessage());
+                } else {
+                    reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, e.getMessage());
+                }
+            } else {
+                reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, ex.getMessage());
+            }
         } finally {
             log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
             log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
