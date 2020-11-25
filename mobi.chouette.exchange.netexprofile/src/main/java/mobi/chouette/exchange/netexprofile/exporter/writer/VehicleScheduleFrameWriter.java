@@ -26,15 +26,7 @@ public class VehicleScheduleFrameWriter extends AbstractNetexWriter {
                 writer.writeStartElement(VEHICLE_SCHEDULE_FRAME);
                 writer.writeAttribute(VERSION, NETEX_DEFAULT_OBJECT_VERSION);
                 writer.writeAttribute(ID, vehicleScheduleFrameId);
-
-                if (fragmentMode == NetexFragmentMode.LINE) {
-                    writeBlocksElement(writer, exportableNetexData, marshaller);
-
-                } else {
-                    // shared data
-                    writeBlocksElement(writer, exportableNetexData, marshaller);
-
-                }
+                writeBlocksElement(writer, exportableNetexData, marshaller);
                 writer.writeEndElement();
             } catch (Exception e) {
                 throw new RuntimeException(e);
