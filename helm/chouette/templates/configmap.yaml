@@ -189,7 +189,7 @@ data:
                           <password>${env.CHOUETTE_IEV_DATABASE_PASSWORD}</password>
                         </security>
                         <validation>
-                            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                            <check-valid-connection-sql>select version();</check-valid-connection-sql>
                             <validate-on-match>false</validate-on-match>
                             <background-validation>true</background-validation>
                             <background-validation-millis>10000</background-validation-millis>
@@ -212,7 +212,7 @@ data:
                           <password>${env.CHOUETTE_DATABASE_PASSWORD}</password>
                         </security>
                         <validation>
-                            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                            <check-valid-connection-sql>select version();</check-valid-connection-sql>
                             <validate-on-match>false</validate-on-match>
                             <background-validation>true</background-validation>
                             <background-validation-millis>10000</background-validation-millis>
@@ -416,7 +416,7 @@ data:
                 </core-environment>
                 <recovery-environment socket-binding="txn-recovery-environment" status-socket-binding="txn-status-manager"/>
             </subsystem>
-            <subsystem xmlns="urn:jboss:domain:undertow:1.2">
+        <subsystem xmlns="urn:jboss:domain:undertow:1.2" statistics-enabled="true">
                 <buffer-cache name="default"/>
                 <server name="default-server">
                     <http-listener name="default" socket-binding="http" max-post-size="200000000"/>
