@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ejb.ConcurrencyManagement;
@@ -23,6 +22,7 @@ import javax.ejb.TransactionAttributeType;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.TimetableDAO;
+import mobi.chouette.dao.exception.ChouetteStatisticsTimeoutException;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.statistics.Line;
 import mobi.chouette.model.statistics.LineAndTimetable;
@@ -35,7 +35,6 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.joda.time.DateMidnight;
 import org.joda.time.LocalDate;
 import org.rutebanken.helper.calendar.CalendarPattern;
@@ -68,8 +67,8 @@ public class TransitDataStatisticsService {
 	 *            organize lineNumbers into validity categories. First category
 	 *            is from 0 to lowest key value. Corresponding value in map is
 	 *            used as categegory name,
-	 * @return
-	 * @throws ServiceException
+	 * @return the line statistics
+	 * @throws RequestServiceException if the statistics cannot be calculated
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public LineStatistics getLineStatisticsByLineNumber(String referential, Date startDate, int days,
@@ -92,7 +91,11 @@ public class TransitDataStatisticsService {
 		Map<String, PublicLine> publicLines = new HashMap<String, PublicLine>();
 
 		// Convert Chouette internal model to the statistics model used
-		convertChouetteModelToStatisticsModel(startDate, publicLines);
+		try {
+			convertChouetteModelToStatisticsModel(startDate, publicLines);
+		} catch (ChouetteStatisticsTimeoutException e) {
+			throw new RequestServiceException(RequestExceptionCode.REFERENTIAL_BUSY, "Query timeout while calculating statistics for referential " + referential, e );
+		}
 
 		// If Line->Timetable->Period is empty, remove Line but keep publicLine
 		filterLinesWithEmptyTimetablePeriods(publicLines);
@@ -207,9 +210,7 @@ public class TransitDataStatisticsService {
 		}
 	}
 
-	protected void convertChouetteModelToStatisticsModel(Date startDate, Map<String, PublicLine> publicLines) {
-
-		//timetableDAO.setLockTimeoutForCurrentTransaction();
+	protected void convertChouetteModelToStatisticsModel(Date startDate, Map<String, PublicLine> publicLines) throws ChouetteStatisticsTimeoutException {
 		// Load list of lineIds with corresponding Timetables
 		long now = System.currentTimeMillis();
 		Collection<LineAndTimetable> allTimetableForAllLines = timetableDAO.getAllTimetableForAllLines();

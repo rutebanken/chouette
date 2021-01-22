@@ -169,10 +169,4 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 		}
 	}
 
-	@Override
-	public void setLockTimeoutForCurrentTransaction() {
-		Query q = em.createNativeQuery("SET LOCAL lock_timeout = '5s'");
-		q.executeUpdate();
-	}
-
 }
