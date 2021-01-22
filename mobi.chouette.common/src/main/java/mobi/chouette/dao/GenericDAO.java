@@ -39,6 +39,7 @@ public interface GenericDAO<T> {
 	void clear();
 
 	void detach(Collection<?> list);
-	
 
+
+	void setLockTimeoutForCurrentTransaction();
 }

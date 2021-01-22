@@ -168,5 +168,11 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 			em.detach(object);
 		}
 	}
-	
+
+	@Override
+	public void setLockTimeoutForCurrentTransaction() {
+		Query q = em.createNativeQuery("SET LOCAL lock_timeout = '5s'");
+		q.executeUpdate();
+	}
+
 }

@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import mobi.chouette.model.statistics.LineAndTimetable;
 import org.hibernate.Session;
 
 import com.google.common.collect.Iterables;
@@ -177,5 +178,10 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 		}
 	}
 
+	@Override
+	public void setLockTimeoutForCurrentTransaction() {
+		Query q = em.createNativeQuery("SET LOCAL lock_timeout = '5s'");
+		q.executeUpdate();
+	}
 	
 }

@@ -4,15 +4,24 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.statistics.LineAndTimetable;
-import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.hibernate.exception.GenericJDBCException;
 import org.joda.time.LocalDate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.QueryTimeoutException;
 import java.math.BigInteger;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Stateless
@@ -36,12 +45,26 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 				+ "left join vehicle_journeys vj on vjt.vehicle_journey_id=vj.id "
 				+ "left join routes as r on vj.route_id=r.id "
 				+ "right join lines as l on r.line_id=l.id order by line_id");
+		q.unwrap(org.hibernate.Query.class).setTimeout(10);
 
-		@SuppressWarnings("unchecked")
-		List<Object[]> resultList2 = q.getResultList();
+		List<Object[]> resultList;
+		try {
+			resultList = q.getResultList();
+		} catch (PersistenceException e) {
+			if (e.getCause() instanceof GenericJDBCException) {
+				GenericJDBCException genericJDBCException = (GenericJDBCException) e.getCause();
+				if ("57014".equals(genericJDBCException.getSQLState())) {
+					throw new QueryTimeoutException(e);
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
+			}
+		}
 
 		Set<Long> timetableIds = new HashSet<Long>();
-		for (Object[] lineToTimetablesMap : resultList2) {
+		for (Object[] lineToTimetablesMap : resultList) {
 			if (lineToTimetablesMap.length > 0 && lineToTimetablesMap[1] != null) {
 				timetableIds.add(toLong(lineToTimetablesMap[1]));
 			}
@@ -57,7 +80,7 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 			}
 
 
-			for (Object[] lineTimetableIdPair : resultList2) {
+			for (Object[] lineTimetableIdPair : resultList) {
 				Long lineId = toLong(lineTimetableIdPair[0]);
 				LineAndTimetable lat = lineToTimetablesMap.get(lineId);
 				if (lat == null) {
