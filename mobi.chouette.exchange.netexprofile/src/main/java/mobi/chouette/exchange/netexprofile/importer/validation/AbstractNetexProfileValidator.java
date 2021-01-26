@@ -433,10 +433,12 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 	 */
 	protected void verifyExternalRefs(Context context, List<IdVersion> externalRefs, Set<IdVersion> localIds, Set<IdVersion> commonIds) {
 		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-		// Remove references that are found in local ids
-		Set<IdVersion> possibleExternalReferences = externalRefs.stream().filter(e -> !localIds.contains(e)).collect(Collectors.toSet());
+		// Remove duplicates, that is: references that have the same id and version (see #IdVersion.equals)
+		Set<IdVersion> possibleExternalReferences = new HashSet<>(externalRefs);
+		// Remove references that are found in local ids, comparing by id and version
+		possibleExternalReferences.removeAll(localIds);
 		if (!possibleExternalReferences.isEmpty()) {
-			// Remove references that are found in the common files
+			// Remove references that are found in the common files, comparing only by id, not by id and version
 			possibleExternalReferences.removeIf(ref -> commonIds.stream().anyMatch(commonId -> commonId.getId().equals(ref.getId())));
 			if (!possibleExternalReferences.isEmpty()) {
 				// Remove references that are valid according to the external id validators
