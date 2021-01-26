@@ -437,22 +437,10 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 		Set<IdVersion> possibleExternalReferences = externalRefs.stream().filter(e -> !localIds.contains(e)).collect(Collectors.toSet());
 		if (!possibleExternalReferences.isEmpty()) {
 			// Remove references that are found in the common files
-			Set<IdVersion> idsFoundInCommonFiles = new HashSet<>();
-			for (IdVersion possibleMissingReference : possibleExternalReferences) {
-				for (IdVersion commonId : commonIds) {
-					if (commonId.getId().equals(possibleMissingReference.getId())) {
-						idsFoundInCommonFiles.add(possibleMissingReference);
-					}
-				}
-			}
-			possibleExternalReferences.removeAll(idsFoundInCommonFiles);
+			possibleExternalReferences.removeIf(ref -> commonIds.stream().anyMatch(commonId -> commonId.getId().equals(ref.getId())));
 			if (!possibleExternalReferences.isEmpty()) {
 				// Remove references that are valid according to the external id validators
-				Set<IdVersion> verifiedExternalRefs = new HashSet<>();
-				for (ExternalReferenceValidator validator : externalReferenceValidators) {
-					verifiedExternalRefs.addAll(validator.validateReferenceIds(context, possibleExternalReferences));
-				}
-				possibleExternalReferences.removeAll(verifiedExternalRefs);
+				externalReferenceValidators.forEach(validator -> possibleExternalReferences.removeAll(validator.validateReferenceIds(context, possibleExternalReferences)));
 				if (!possibleExternalReferences.isEmpty()) {
 					for (IdVersion id : possibleExternalReferences) {
 						if (log.isDebugEnabled()) {
