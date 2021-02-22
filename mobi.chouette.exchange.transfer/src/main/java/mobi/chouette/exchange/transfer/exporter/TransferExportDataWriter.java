@@ -25,6 +25,7 @@ import mobi.chouette.dao.BlockDAO;
 import mobi.chouette.dao.InterchangeDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.RouteSectionDAO;
+import mobi.chouette.dao.TimetableDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.ProgressionCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
@@ -37,6 +38,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.Referential;
@@ -59,6 +61,9 @@ public class TransferExportDataWriter implements Command, Constant {
 
 	@EJB
 	private VehicleJourneyDAO vehicleJourneyDAO;
+
+	@EJB
+	private TimetableDAO timetableDAO;
 
 	@EJB
 	private RouteSectionDAO routeSectionDAO;
@@ -150,13 +155,22 @@ public class TransferExportDataWriter implements Command, Constant {
 				}
 			}
 
-
+			lineDAO.flush();
 			log.info("Starting to persist blocks");
 			for(Block block: blocksToTransfer) {
+				if(log.isDebugEnabled()) {
+					log.debug("Persisting block " + block.getObjectId());
+				}
 				List<VehicleJourney> persistentVehicleJourneys = block.getVehicleJourneys().stream().map(vj -> vehicleJourneyDAO.findByObjectId(vj.getObjectId())).collect(Collectors.toList());
 				block.setVehicleJourneys(persistentVehicleJourneys);
+
+				List<Timetable> persistentTimetables = block.getTimetables().stream().map(vj -> timetableDAO.findByObjectId(vj.getObjectId())).collect(Collectors.toList());
+				block.setTimetables(persistentTimetables);
+
 				blockDAO.create(block);
 			}
+			log.info("Flushing blocks");
+			lineDAO.flush();
 
 			log.info("Updating target referential last update timestamp");
 			Command updateReferentialLastUpdateTimestampCommand = CommandFactory.create(initialContext, UpdateReferentialLastUpdateTimestampCommand.class.getName());
@@ -171,6 +185,7 @@ public class TransferExportDataWriter implements Command, Constant {
 			em.clear();
 			referential.clear(true);
 			lineToTransfer.clear();
+			blocksToTransfer.clear();
 		}
 	}
 
