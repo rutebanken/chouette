@@ -2,7 +2,6 @@ package mobi.chouette.dao.iev;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
