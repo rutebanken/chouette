@@ -43,7 +43,6 @@ import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
-import mobi.chouette.model.type.ServiceAlterationEnum;
 
 /**
  *
@@ -168,7 +167,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 
 		for (DatedServiceJourney datedServiceJourney : datedServiceJourneys) {
 			// replaced and cancelled services are excluded from the GTFS export.
-			if (datedServiceJourney.isActive()) {
+			if (datedServiceJourney.isNeitherCancelledNorReplaced()) {
 				CalendarDay calendarDay = new CalendarDay();
 				calendarDay.setDate(datedServiceJourney.getOperatingDay());
 				calendarDay.setIncluded(true);
@@ -182,8 +181,12 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 	 * Interchange relations are not enforced in db. Make sure they are valid before exporting.
 	 */
 	private boolean isInterchangeValid(Interchange interchange) {
-		return interchange.getConsumerVehicleJourney() != null && interchange.getFeederVehicleJourney() != null
-				&& interchange.getConsumerStopPoint() != null && interchange.getFeederStopPoint() != null;
+		return interchange.getConsumerVehicleJourney() != null
+				&& interchange.getFeederVehicleJourney() != null
+				&& interchange.getConsumerStopPoint() != null
+				&& interchange.getFeederStopPoint() != null
+				&& interchange.getConsumerVehicleJourney().isNeitherCancelledNorReplaced()
+				&& interchange.getFeederVehicleJourney().isNeitherCancelledNorReplaced();
 	}
 
 
