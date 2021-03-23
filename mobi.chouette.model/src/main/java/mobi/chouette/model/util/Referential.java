@@ -14,6 +14,7 @@ import mobi.chouette.model.Branding;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DatedServiceJourney;
+import mobi.chouette.model.DeadRun;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.FootNoteAlternativeText;
 import mobi.chouette.model.Footnote;
@@ -139,6 +140,10 @@ public class Referential implements java.io.Serializable {
 	@Getter
 	@Setter
 	private Map<String, VehicleJourney> vehicleJourneys = new HashMap<String, VehicleJourney>();
+
+	@Getter
+	@Setter
+	private Map<String, DeadRun> deadRuns = new HashMap<String, DeadRun>();
 
 	@Getter
 	@Setter
