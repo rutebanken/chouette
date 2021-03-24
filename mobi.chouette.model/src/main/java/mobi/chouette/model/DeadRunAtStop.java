@@ -118,9 +118,9 @@ public class DeadRunAtStop extends NeptuneIdentifiedObject implements JourneyAtS
 	/**
 	 * set vehicle journey reference
 	 * 
-	 * @param vehicleJourney
+	 * @param deadRun
 	 */
-	public void setDeadRun(DeadRun vehicleJourney) {
+	public void setDeadRun(DeadRun deadRun) {
 		if (this.deadRun != null) {
 			this.deadRun.getDeadRunAtStops().remove(this);
 		}
