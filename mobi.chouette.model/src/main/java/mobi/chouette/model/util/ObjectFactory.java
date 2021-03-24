@@ -8,6 +8,7 @@ import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.DeadRun;
+import mobi.chouette.model.DeadRunAtStop;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.FootNoteAlternativeText;
 import mobi.chouette.model.Footnote;
@@ -88,6 +89,19 @@ public class ObjectFactory {
 			referential.getVehicleJourneyAtStops().put(objectId, result);
 		}
 		
+		return result;
+	}
+
+	public static DeadRunAtStop getDeadRunAtStop(Referential referential,
+												 String objectId) {
+		DeadRunAtStop result = referential.getDeadRunAtStops().get(objectId);
+		if (result == null) {
+			result = new DeadRunAtStop();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getDeadRunAtStops().put(objectId, result);
+		}
+
 		return result;
 	}
 

@@ -70,6 +70,12 @@ public class CleanRepositoryCommand implements Command {
 	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
 
 	@EJB
+	private DeadRunDAO deadRunDAO;
+
+	@EJB
+	private DeadRunAtStopDAO deadRunAtStopDAO;
+
+	@EJB
 	private DatedServiceJourneyDAO datedServiceJourneyDAO;
 
 	@EJB
@@ -132,6 +138,8 @@ public class CleanRepositoryCommand implements Command {
 			timebandDAO.truncate();
 			vehicleJourneyDAO.truncate();
 			vehicleJourneyAtStopDAO.truncate();
+			deadRunDAO.truncate();
+			deadRunAtStopDAO.truncate();
 			datedServiceJourneyDAO.truncate();
 			blockDAO.truncate();
 			destinationDisplayDAO.truncate();

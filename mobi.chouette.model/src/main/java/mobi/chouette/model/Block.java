@@ -102,7 +102,7 @@ public class Block extends NeptuneIdentifiedObject {
     @JoinTable(name = "blocks_dead_runs", joinColumns = {@JoinColumn(name = "block_id")}, inverseJoinColumns = {@JoinColumn(name = "dead_run_id")})
     private List<DeadRun> deadRuns = new ArrayList<>();
 
-    public void addDeadRuny(DeadRun deadRun) {
+    public void addDeadRun(DeadRun deadRun) {
         if (deadRun != null) {
             deadRun.getBlocks().add(this);
             deadRuns.add(deadRun);

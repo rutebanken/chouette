@@ -37,7 +37,7 @@ import java.util.List;
 		"dead_run_id", "stop_point_id" }, name = "index_dead_run_at_stops_on_stop_point_id"))
 @NoArgsConstructor
 @ToString(callSuper=true, exclude = { "deadRun" })
-public class DeadRunAtStop extends NeptuneIdentifiedObject {
+public class DeadRunAtStop extends NeptuneIdentifiedObject implements JourneyAtStop {
 
 	private static final long serialVersionUID = 194243517715939830L;
 

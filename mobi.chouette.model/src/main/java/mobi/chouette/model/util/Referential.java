@@ -15,6 +15,7 @@ import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.DeadRun;
+import mobi.chouette.model.DeadRunAtStop;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.FootNoteAlternativeText;
 import mobi.chouette.model.Footnote;
@@ -224,6 +225,10 @@ public class Referential implements java.io.Serializable {
 	@Setter
 	private Map<String, VehicleJourneyAtStop> vehicleJourneyAtStops = new HashMap<String, VehicleJourneyAtStop>();
 
+	@Getter
+	@Setter
+	private Map<String, DeadRunAtStop> deadRunAtStops = new HashMap<>();
+
 	public void clear(boolean cascade) {
 		if (cascade) {
 			for (Line line : lines.values()) {
@@ -255,6 +260,10 @@ public class Referential implements java.io.Serializable {
 				vj.getJourneyFrequencies().clear();
 				vj.getFootnotes().clear();
 				vj.getDatedServiceJourneys().clear();
+			}
+			for (DeadRun dr : deadRuns.values()) {
+				dr.getDeadRunAtStops().clear();
+				dr.getTimetables().clear();
 			}
 			for (Timetable timetable : timetables.values()) {
 				timetable.getVehicleJourneys().clear();
