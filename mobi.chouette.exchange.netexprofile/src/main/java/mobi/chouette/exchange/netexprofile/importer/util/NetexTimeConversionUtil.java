@@ -6,13 +6,12 @@ import java.time.LocalTime;
 
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.model.JourneyAtStop;
-import mobi.chouette.model.VehicleJourneyAtStop;
 
 import org.rutebanken.netex.model.TimetabledPassingTime;
 
 public class NetexTimeConversionUtil {
 
-	public static void populatePassingTimeUtc(TimetabledPassingTime passingTime, boolean arrival, VehicleJourneyAtStop vj) {
+	public static void populatePassingTimeUtc(TimetabledPassingTime passingTime, boolean arrival, JourneyAtStop vj) {
 	    if((arrival && vj.getArrivalTime() == null || (!arrival && vj.getDepartureTime() == null))) {
 	    	return;
 	    }

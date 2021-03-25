@@ -20,6 +20,7 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.producer.BrandingProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.CalendarProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.DatedServiceJourneyProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.DeadRunProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.JourneyPatternProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.LineProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
@@ -44,6 +45,7 @@ import mobi.chouette.model.StopPoint;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.AvailabilityCondition;
+import org.rutebanken.netex.model.DeadRun;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
 import org.rutebanken.netex.model.GroupOfLines;
@@ -74,6 +76,7 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 	private static JourneyPatternProducer journeyPatternProducer = new JourneyPatternProducer();
 	private static CalendarProducer calendarProducer = new CalendarProducer();
 	private static ServiceJourneyProducer serviceJourneyProducer = new ServiceJourneyProducer();
+	private static DeadRunProducer deadRunProducer = new DeadRunProducer();
 	private static DatedServiceJourneyProducer datedServiceJourneyProducer = new DatedServiceJourneyProducer();
 	private static ServiceJourneyInterchangeProducer serviceJourneyInterchangeProducer = new ServiceJourneyInterchangeProducer();
 	private static BrandingProducer brandingProducer = new BrandingProducer();
@@ -139,6 +142,11 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 		for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
 			ServiceJourney serviceJourney = serviceJourneyProducer.produce(context, vehicleJourney, exportableData.getLine());
 			exportableNetexData.getServiceJourneys().add(serviceJourney);
+		}
+
+		for (mobi.chouette.model.DeadRun chouetteDeadRun : exportableData.getDeadRuns()) {
+			DeadRun deadRun = deadRunProducer.produce(context, chouetteDeadRun, exportableData.getLine());
+			exportableNetexData.getDeadRuns().add(deadRun);
 		}
 
 		for (DatedServiceJourney datedServiceJourney : exportableData.getDatedServiceJourneys()) {

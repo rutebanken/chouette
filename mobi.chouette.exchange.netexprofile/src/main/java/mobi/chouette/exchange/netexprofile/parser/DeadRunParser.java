@@ -18,6 +18,7 @@ import mobi.chouette.model.util.Referential;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.DeadRun;
+import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
 import org.rutebanken.netex.model.ServiceJourney;
@@ -67,6 +68,12 @@ public class DeadRunParser extends NetexParser implements Parser, Constant {
 			}
 
 			chouetteDeadRun.setObjectVersion(NetexParserUtils.getVersion(deadRun));
+
+			if (deadRun.getJourneyPatternRef() != null) {
+				JourneyPatternRefStructure patternRefStruct = deadRun.getJourneyPatternRef().getValue();
+				mobi.chouette.model.JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential, patternRefStruct.getRef());
+				chouetteDeadRun.setJourneyPattern(journeyPattern);
+			}
 
 			parseTimetabledPassingTimes(context, referential, deadRun, chouetteDeadRun);
 

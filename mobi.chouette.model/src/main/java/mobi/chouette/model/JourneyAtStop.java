@@ -11,4 +11,12 @@ public interface JourneyAtStop {
     void setDepartureTime(LocalTime toJodaLocalTime);
 
     void setDepartureDayOffset(int intValue);
+
+    LocalTime getArrivalTime();
+
+    LocalTime getDepartureTime();
+
+    int getArrivalDayOffset();
+
+    int getDepartureDayOffset();
 }

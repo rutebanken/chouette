@@ -57,7 +57,7 @@ public class BlockParser extends NetexParser implements Parser {
             }
         }
 
-        // vehicle journey
+        // dead runs and vehicle journeys
         for (JAXBElement<?> jaxbJourneyRef : netexBlock.getJourneys().getJourneyRefOrJourneyDesignatorOrServiceDesignator()) {
             Object reference = jaxbJourneyRef.getValue();
             if (reference instanceof DeadRunRefStructure) {
