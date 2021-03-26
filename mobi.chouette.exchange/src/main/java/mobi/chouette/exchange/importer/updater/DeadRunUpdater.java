@@ -94,7 +94,7 @@ public class DeadRunUpdater implements Updater<DeadRun> {
 			if (newValue.getCreatorId() != null && !newValue.getCreatorId().equals(oldValue.getCreatorId())) {
 				oldValue.setCreatorId(newValue.getCreatorId());
 			}
-
+		}
 
 			// DeadRunAtStop
 			if (!optimized) {
@@ -179,9 +179,6 @@ public class DeadRunUpdater implements Updater<DeadRun> {
 			for (Timetable timetable : removedTimetable) {
 				timetable.removeDeadRun(oldValue);
 			}
-
-
-		}
 	}
 
 
