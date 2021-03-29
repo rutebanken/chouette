@@ -144,9 +144,11 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 			exportableNetexData.getServiceJourneys().add(serviceJourney);
 		}
 
-		for (mobi.chouette.model.DeadRun chouetteDeadRun : exportableData.getDeadRuns()) {
-			DeadRun deadRun = deadRunProducer.produce(context, chouetteDeadRun, exportableData.getLine());
-			exportableNetexData.getDeadRuns().add(deadRun);
+		if (configuration.isExportBlocks()) {
+			for (mobi.chouette.model.DeadRun chouetteDeadRun : exportableData.getDeadRuns()) {
+				DeadRun deadRun = deadRunProducer.produce(context, chouetteDeadRun, exportableData.getLine());
+				exportableNetexData.getDeadRuns().add(deadRun);
+			}
 		}
 
 		for (DatedServiceJourney datedServiceJourney : exportableData.getDatedServiceJourneys()) {
