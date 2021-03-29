@@ -315,4 +315,7 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 		return getStopPoints().size() >= 2;
 	}
 
+	public boolean hasOnlyDeadRuns() {
+		return vehicleJourneys.isEmpty() && !deadRuns.isEmpty();
+	}
 }
