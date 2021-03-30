@@ -83,29 +83,26 @@ public class DeadRunParser extends NetexParser implements Parser, Constant {
 	}
 
 	private void parseTimetabledPassingTimes(Context context, Referential referential, DeadRun deadRun, mobi.chouette.model.DeadRun chouetteDeadRun) {
+		if(deadRun.getPassingTimes() != null && deadRun.getPassingTimes().getTimetabledPassingTime() != null && !deadRun.getPassingTimes().getTimetabledPassingTime().isEmpty()) {
+			NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
+			for (int i = 0; i < deadRun.getPassingTimes().getTimetabledPassingTime().size(); i++) {
+				TimetabledPassingTime passingTime = deadRun.getPassingTimes().getTimetabledPassingTime().get(i);
+				String passingTimeId = passingTime.getId();
 
-		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
+				if (passingTimeId == null) {
+					passingTimeId = NetexParserUtils.netexId(configuration.getObjectIdPrefix(), ObjectIdTypes.VEHICLE_JOURNEY_AT_STOP_KEY, UUID.randomUUID().toString());
+				}
+				DeadRunAtStop chouetteDeadRunAtStop = ObjectFactory.getDeadRunAtStop(referential, passingTimeId);
+				chouetteDeadRunAtStop.setObjectVersion(NetexParserUtils.getVersion(passingTime));
 
+				StopPoint stopPoint = ObjectFactory.getStopPoint(referential, passingTime.getPointInJourneyPatternRef().getValue().getRef());
+				chouetteDeadRunAtStop.setStopPoint(stopPoint);
 
-		for (int i = 0; i < deadRun.getPassingTimes().getTimetabledPassingTime().size(); i++) {
-			TimetabledPassingTime passingTime = deadRun.getPassingTimes().getTimetabledPassingTime().get(i);
-			String passingTimeId = passingTime.getId();
-
-			if (passingTimeId == null) {
-				// TODO profile should prevent this from happening, creating bogus
-				passingTimeId = NetexParserUtils.netexId(configuration.getObjectIdPrefix(), ObjectIdTypes.VEHICLE_JOURNEY_AT_STOP_KEY, UUID.randomUUID().toString());
+				parsePassingTimes(passingTime, chouetteDeadRunAtStop);
+				chouetteDeadRunAtStop.setDeadRun(chouetteDeadRun);
 			}
-			DeadRunAtStop chouetteDeadRunAtStop = ObjectFactory.getDeadRunAtStop(referential, passingTimeId);
-			chouetteDeadRunAtStop.setObjectVersion(NetexParserUtils.getVersion(passingTime));
-
-			StopPoint stopPoint = ObjectFactory.getStopPoint(referential, passingTime.getPointInJourneyPatternRef().getValue().getRef());
-			chouetteDeadRunAtStop.setStopPoint(stopPoint);
-
-			parsePassingTimes(passingTime, chouetteDeadRunAtStop);
-			chouetteDeadRunAtStop.setDeadRun(chouetteDeadRun);
+			chouetteDeadRun.getDeadRunAtStops().sort(Comparator.comparingInt(o -> o.getStopPoint().getPosition()));
 		}
-
-		chouetteDeadRun.getDeadRunAtStops().sort(Comparator.comparingInt(o -> o.getStopPoint().getPosition()));
 	}
 
 	// TODO add support for other time zones and zone offsets, for now only handling UTC
