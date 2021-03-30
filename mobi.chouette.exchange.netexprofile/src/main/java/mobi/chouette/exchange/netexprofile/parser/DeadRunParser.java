@@ -10,8 +10,6 @@ import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil
 import mobi.chouette.model.DeadRunAtStop;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
@@ -21,7 +19,6 @@ import org.rutebanken.netex.model.DeadRun;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
-import org.rutebanken.netex.model.ServiceJourney;
 import org.rutebanken.netex.model.TimetabledPassingTime;
 
 import javax.xml.bind.JAXBElement;

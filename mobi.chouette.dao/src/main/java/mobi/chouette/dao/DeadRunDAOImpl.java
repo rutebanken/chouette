@@ -1,6 +1,5 @@
 package mobi.chouette.dao;
 
-import mobi.chouette.model.Block;
 import mobi.chouette.model.DeadRun;
 
 import javax.ejb.Stateless;
