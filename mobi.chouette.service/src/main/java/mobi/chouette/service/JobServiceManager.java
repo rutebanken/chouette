@@ -244,7 +244,7 @@ public class JobServiceManager {
 
 		boolean result = checker.validateContener(referential);
 		if (!result) {
-			throw new RequestServiceException(RequestExceptionCode.UNKNOWN_REFERENTIAL, "referential");
+			throw new RequestServiceException(RequestExceptionCode.UNKNOWN_REFERENTIAL, "Unknown referential " + referential);
 		}
 
 		referentials.add(referential);
