@@ -798,7 +798,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 	private TransportSubModeNameEnum getTransportSubMode(VehicleJourney vj) {
 		if (vj.getTransportSubMode() != null) {
 			return vj.getTransportSubMode();
-		} else return vj.getRoute().getLine().getTransportSubModeName();
+		} else return vj.getJourneyPattern().getRoute().getLine().getTransportSubModeName();
 	}
 
 
