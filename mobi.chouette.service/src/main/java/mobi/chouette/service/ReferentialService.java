@@ -175,7 +175,7 @@ public class ReferentialService {
     public LocalDateTime getLastUpdateTimestamp(String referential) throws ServiceException {
 
         if (!referentialDAO.getReferentials().contains(referential)) {
-            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot update referential: referential not found: " + referential);
+            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot retrieve last update timestamp: referential not found: " + referential);
         }
         ContextHolder.setContext(referential);
         return referentialLastUpdateDAO.getLastUpdateTimestamp();
