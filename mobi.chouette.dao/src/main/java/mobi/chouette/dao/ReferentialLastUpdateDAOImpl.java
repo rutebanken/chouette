@@ -9,7 +9,7 @@ import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-@Stateless(name = "ReferentialDAO")
+@Stateless(name = "ReferentialLastUpdateDAO")
 @Log4j
 public class ReferentialLastUpdateDAOImpl implements ReferentialLastUpdateDAO {
 
