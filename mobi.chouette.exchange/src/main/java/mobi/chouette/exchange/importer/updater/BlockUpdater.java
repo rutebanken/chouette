@@ -48,6 +48,10 @@ public class BlockUpdater implements Updater<Block> {
             oldValue.setCreationTime(newValue.getCreationTime());
             oldValue.setCreatorId(newValue.getCreatorId());
             oldValue.setPrivateCode(newValue.getPrivateCode());
+            oldValue.setDescription(newValue.getDescription());
+            oldValue.setStartTime(newValue.getStartTime());
+            oldValue.setEndTime(newValue.getEndTime());
+            oldValue.setEndTimeDayOffset(newValue.getEndTimeDayOffset());
             oldValue.setDetached(false);
         } else {
             if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {

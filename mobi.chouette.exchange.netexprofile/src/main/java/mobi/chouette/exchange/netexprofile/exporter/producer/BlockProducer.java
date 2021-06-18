@@ -1,7 +1,9 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.model.Block;
@@ -10,6 +12,8 @@ import mobi.chouette.model.VehicleJourney;
 import org.rutebanken.netex.model.Block_VersionStructure;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.JourneyRefs_RelStructure;
+import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.PointRefStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 import org.rutebanken.netex.model.VehicleJourneyRefStructure;
 
@@ -25,9 +29,46 @@ public class BlockProducer extends NetexProducer {
         NetexProducerUtils.populateId(block, netexBlock);
 
         // private code
-        PrivateCodeStructure privateCodeStructure = netexFactory.createPrivateCodeStructure();
-        privateCodeStructure.setValue(block.getPrivateCode());
-        netexBlock.setPrivateCode(privateCodeStructure);
+        if(block.getPrivateCode() != null) {
+            PrivateCodeStructure privateCodeStructure = netexFactory.createPrivateCodeStructure();
+            privateCodeStructure.setValue(block.getPrivateCode());
+            netexBlock.setPrivateCode(privateCodeStructure);
+        }
+
+        // description
+        if(block.getDescription() != null) {
+            MultilingualString description = netexFactory.createMultilingualString();
+            netexBlock.setDescription(description);
+        }
+
+        // start time
+        if(block.getStartTime() != null) {
+            netexBlock.setStartTime(TimeUtil.toLocalTimeFromJoda(block.getStartTime()));
+        }
+
+        // end time
+        if(block.getEndTime() != null) {
+            netexBlock.setEndTime(TimeUtil.toLocalTimeFromJoda(block.getEndTime()));
+        }
+
+        // end time day offset
+        if(block.getEndTimeDayOffset() != null) {
+            netexBlock.setEndTimeDayOffset(ConversionUtil.asBigInteger(block.getEndTimeDayOffset()));
+        }
+
+        // start point
+        if(block.getStartPoint() != null) {
+            PointRefStructure startPointRefStructure = netexFactory.createScheduledStopPointRefStructure();
+            NetexProducerUtils.populateReference(block.getStartPoint(),startPointRefStructure, true);
+            netexBlock.setEndPointRef(startPointRefStructure);
+        }
+
+        // end point
+        if(block.getEndPoint() != null) {
+            PointRefStructure endPointRefStructure = netexFactory.createScheduledStopPointRefStructure();
+            NetexProducerUtils.populateReference(block.getEndPoint(),endPointRefStructure, true);
+            netexBlock.setEndPointRef(endPointRefStructure);
+        }
 
         // timetables
         if (!block.getTimetables().isEmpty()) {
