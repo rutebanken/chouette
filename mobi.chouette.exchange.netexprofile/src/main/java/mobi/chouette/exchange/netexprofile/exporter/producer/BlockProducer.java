@@ -28,6 +28,13 @@ public class BlockProducer extends NetexProducer {
         org.rutebanken.netex.model.Block netexBlock = netexFactory.createBlock();
         NetexProducerUtils.populateId(block, netexBlock);
 
+        // name
+        if(block.getName() != null) {
+            MultilingualString name = netexFactory.createMultilingualString();
+            name.setValue(block.getDescription());
+            netexBlock.setName(name);
+        }
+
         // private code
         if(block.getPrivateCode() != null) {
             PrivateCodeStructure privateCodeStructure = netexFactory.createPrivateCodeStructure();
@@ -38,6 +45,7 @@ public class BlockProducer extends NetexProducer {
         // description
         if(block.getDescription() != null) {
             MultilingualString description = netexFactory.createMultilingualString();
+            description.setValue(block.getDescription());
             netexBlock.setDescription(description);
         }
 

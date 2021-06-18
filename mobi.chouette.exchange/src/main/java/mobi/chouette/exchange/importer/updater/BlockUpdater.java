@@ -47,6 +47,7 @@ public class BlockUpdater implements Updater<Block> {
             oldValue.setObjectVersion(newValue.getObjectVersion());
             oldValue.setCreationTime(newValue.getCreationTime());
             oldValue.setCreatorId(newValue.getCreatorId());
+            oldValue.setName(newValue.getName());
             oldValue.setPrivateCode(newValue.getPrivateCode());
             oldValue.setDescription(newValue.getDescription());
             oldValue.setStartTime(newValue.getStartTime());

@@ -48,6 +48,12 @@ public class BlockParser extends NetexParser implements Parser {
         }
         mobi.chouette.model.Block chouetteBlock = ObjectFactory.getBlock(referential, netexBlock.getId());
 
+        // name
+        MultilingualString name = netexBlock.getName();
+        if(name != null) {
+            chouetteBlock.setName(name.getValue());
+        }
+
         // private code
         PrivateCodeStructure privateCode = netexBlock.getPrivateCode();
         if(privateCode != null) {
@@ -64,7 +70,7 @@ public class BlockParser extends NetexParser implements Parser {
         chouetteBlock.setStartTime(TimeUtil.toJodaLocalTime(netexBlock.getStartTime()));
 
         // end time
-        chouetteBlock.setStartTime(TimeUtil.toJodaLocalTime(netexBlock.getStartTime()));
+        chouetteBlock.setEndTime(TimeUtil.toJodaLocalTime(netexBlock.getEndTime()));
 
         // end time day offset
         chouetteBlock.setEndTimeDayOffset(ConversionUtil.asInteger(netexBlock.getEndTimeDayOffset()));
@@ -80,7 +86,7 @@ public class BlockParser extends NetexParser implements Parser {
         PointRefStructure endPointRef = netexBlock.getEndPointRef();
         if(endPointRef != null) {
             ScheduledStopPoint endScheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, endPointRef.getRef());
-            chouetteBlock.setStartPoint(endScheduledStopPoint);
+            chouetteBlock.setEndPoint(endScheduledStopPoint);
         }
 
 

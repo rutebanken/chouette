@@ -43,6 +43,24 @@ public class Block extends NeptuneIdentifiedObject {
     @Column(name = "id", nullable = false)
     protected Long id;
 
+
+    /**
+     * Name of the block.
+     */
+    @Getter
+    @Column(name = "name")
+    private String name;
+
+    /**
+     * set name code <br/>
+     * truncated to 255 characters if too long
+     *
+     * @param value New value
+     */
+    public void setName(String value) {
+        name = StringUtils.abbreviate(value, 255);
+    }
+
     /**
      * Identification of block, not intended for the public.
      */
