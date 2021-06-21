@@ -66,14 +66,14 @@ public class BlockProducer extends NetexProducer {
 
         // start point
         if(block.getStartPoint() != null) {
-            PointRefStructure startPointRefStructure = netexFactory.createScheduledStopPointRefStructure();
+            PointRefStructure startPointRefStructure = netexFactory.createPointRefStructure();
             NetexProducerUtils.populateReference(block.getStartPoint(),startPointRefStructure, true);
-            netexBlock.setEndPointRef(startPointRefStructure);
+            netexBlock.setStartPointRef(startPointRefStructure);
         }
 
         // end point
         if(block.getEndPoint() != null) {
-            PointRefStructure endPointRefStructure = netexFactory.createScheduledStopPointRefStructure();
+            PointRefStructure endPointRefStructure = netexFactory.createPointRefStructure();
             NetexProducerUtils.populateReference(block.getEndPoint(),endPointRefStructure, true);
             netexBlock.setEndPointRef(endPointRefStructure);
         }
