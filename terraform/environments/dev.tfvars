@@ -1,7 +1,4 @@
-gcp_gcs_project = "entur-ror-dev"
 gcp_resources_project = "entur-ror-dev"
-gcp_cloudsql_project = "entur-ror-dev"
 kube_namespace = "dev"
 bucket_instance_suffix ="dev"
-location = "europe-west1"
 service_account_bucket_role="roles/storage.admin"

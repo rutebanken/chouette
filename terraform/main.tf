@@ -14,10 +14,11 @@ provider "kubernetes" {
 # Create bucket
 resource "google_storage_bucket" "storage_bucket" {
   name               = "${var.bucket_instance_prefix}-${var.bucket_instance_suffix}"
-  location           = var.location
-  project            = var.gcp_gcs_project
+  location           = var.bucket_location
+  project            = var.gcp_resources_project
   storage_class      = var.bucket_storage_class
   labels             = var.labels
+
 
   lifecycle_rule {
 
@@ -40,7 +41,7 @@ resource "google_service_account" "chouette_service_account" {
 
 # add service account as member to the cloudsql client
 resource "google_project_iam_member" "cloudsql_iam_member" {
-  project = var.gcp_cloudsql_project
+  project = var.gcp_resources_project
   role    = var.service_account_cloudsql_role
   member = "serviceAccount:${google_service_account.chouette_service_account.email}"
 }
@@ -82,4 +83,61 @@ resource "kubernetes_secret" "ror-chouette-secret" {
     "chouette-admin-initial-encrypted-password"     = var.ror-chouette-admin-initial-encrypted-password
     "chouette-user-initial-encrypted-password"     = var.ror-chouette-user-initial-encrypted-password
   }
+}
+
+resource "google_sql_database_instance" "db_instance" {
+  name = "chouette-db-pg13"
+  database_version = "POSTGRES_13"
+  project = var.gcp_resources_project
+  region = var.db_region
+
+  settings {
+    location_preference {
+      zone = var.db_zone_letter
+    }
+    tier = var.db_tier
+    user_labels = var.labels
+    availability_type = var.db_availability
+    backup_configuration {
+      enabled = true
+      // 01:00 UTC
+      start_time = "01:00"
+    }
+    maintenance_window {
+      // Sunday
+      day = 7
+      // 02:00 UTC
+      hour = 2
+    }
+    ip_configuration {
+      require_ssl = true
+    }
+    database_flags {
+      name = "work_mem"
+      value = "15000"
+    }
+    database_flags {
+      name = "log_min_duration_statement"
+      value = "200"
+    }
+  }
+}
+
+resource "google_sql_database" "db-chouette" {
+  name = "chouette"
+  project = var.gcp_resources_project
+  instance = google_sql_database_instance.db_instance.name
+}
+
+resource "google_sql_database" "db-iev" {
+  name = "iev"
+  project = var.gcp_resources_project
+  instance = google_sql_database_instance.db_instance.name
+}
+
+resource "google_sql_user" "db-user" {
+  name = var.ror-chouette-db-username
+  project = var.gcp_resources_project
+  instance = google_sql_database_instance.db_instance.name
+  password = var.ror-chouette-db-password
 }

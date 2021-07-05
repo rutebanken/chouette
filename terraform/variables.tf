@@ -1,19 +1,9 @@
 #Enviroment variables
-variable "gcp_gcs_project" {
-    description = "The GCP project id"
-}
-
-variable "gcp_cloudsql_project" {
-  description = "The GCP project hosting the CloudSQL resources"
-}
 
 variable "gcp_resources_project" {
   description = "The GCP project hosting the project resources"
 }
 
-variable "location" {
-  description = "GCP bucket location"
-}
 variable "kube_namespace" {
   description = "The Kubernetes namespace"
 }
@@ -27,6 +17,11 @@ variable "labels" {
        slack   = "talk-ror"
        app     = "chouette"
      }
+}
+
+variable "bucket_location" {
+  description = "GCP bucket location"
+  default = "europe-west1"
 }
 
 variable "bucket_instance_suffix" {
@@ -85,4 +80,24 @@ variable "ror-chouette-admin-initial-encrypted-password" {
 
 variable "ror-chouette-user-initial-encrypted-password" {
   description = "chouette user initial encrypted password"
+}
+
+variable "db_region" {
+  description = "GCP  region"
+  default = "europe-west1"
+}
+
+variable "db_zone_letter" {
+  description = "GCP zone letter"
+  default = "b"
+}
+
+variable "db_tier" {
+  description = "Database instance tier"
+  default = "db-custom-4-19200"
+}
+
+variable "db_availability" {
+  description = "Database availablity"
+  default = "ZONAL"
 }
